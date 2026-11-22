@@ -65,6 +65,11 @@ function canonicalUrl(id) {
   return `${location.origin}${location.pathname}?v=${encodeURIComponent(id)}`;
 }
 
+/** Respect the user's motion preference for programmatic scrolling. */
+function prefersReducedMotion() {
+  return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+}
+
 function updateMeta(video) {
   const pageTitle = `${video.title} · Beatavo`;
   const description = `Watch "${video.title}" and dance along on Beatavo — fun cartoon music videos for everyone.`;
@@ -274,7 +279,7 @@ function setupMiniplayer() {
   miniPlay.addEventListener('click', togglePlay);
   miniExpand.addEventListener('click', () => {
     setMiniVisible(false);
-    stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    stage.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'center' });
   });
 }
 
@@ -291,6 +296,7 @@ function showMessage(heading, body) {
   prevBtn.disabled = true;
   nextBtn.disabled = true;
   shareBtn.disabled = true;
+  if (embedBtn) embedBtn.disabled = true;
 }
 
 async function init() {
@@ -396,8 +402,11 @@ embedBtn?.addEventListener('click', async () => {
 });
 
 document.addEventListener('keydown', (e) => {
-  const tag = (e.target.tagName || '').toLowerCase();
-  if (tag === 'input' || tag === 'textarea') return;
+  // Don't hijack the arrow keys while typing or during a modifier shortcut.
+  const el = e.target;
+  const tag = (el.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea' || tag === 'select' || el.isContentEditable) return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
   if (e.key === 'ArrowRight') go(1);
   if (e.key === 'ArrowLeft') go(-1);
 });
