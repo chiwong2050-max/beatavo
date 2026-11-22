@@ -996,6 +996,58 @@ main {
 }
 
 /* --------------------------------------------------------------------------
+   Kids page — bigger buttons, roomier cards, always-visible play affordance
+   -------------------------------------------------------------------------- */
+.kids-back {
+  margin-bottom: var(--space-4);
+}
+
+.hero--kids {
+  background: linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand-2) 100%);
+}
+
+.kids-page .btn--kids {
+  min-height: 72px;
+  padding-inline: var(--space-6);
+  font-size: 1.25rem;
+  border-radius: var(--radius-lg);
+}
+
+.kids-page .btn--kids svg {
+  width: 28px;
+  height: 28px;
+}
+
+.video-grid--kids {
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: var(--space-5);
+}
+
+@media (min-width: 40rem) {
+  .video-grid--kids {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+.card--kids .card__thumb {
+  border-radius: var(--radius-lg);
+}
+
+.card--kids .card__title {
+  font-size: 1.15rem;
+}
+
+.card--kids .card__play {
+  opacity: 1;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0));
+}
+
+.card--kids .card__play svg {
+  width: 72px;
+  height: 72px;
+}
+
+/* --------------------------------------------------------------------------
    Motion preferences
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
