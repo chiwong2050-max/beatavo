@@ -171,3 +171,124 @@ export function toggleFavourite(id) {
   window.dispatchEvent(new CustomEvent(FAVOURITES_EVENT, { detail: { id, list } }));
   return added;
 }
+
+/* --------------------------------------------------------------------------
+   Playlists — named lists of videos, kept locally (no accounts, no server).
+   -------------------------------------------------------------------------- */
+const PLAYLISTS_KEY = 'beatavo:playlists';
+
+/** Fired on window whenever any playlist changes. */
+export const PLAYLISTS_EVENT = 'beatavo:playlists-changed';
+
+/** Short, collision-resistant id — no dependency on crypto.randomUUID. */
+function newId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+/** Read the saved playlists, tolerating missing or corrupt storage. */
+export function getPlaylists() {
+  try {
+    const raw = localStorage.getItem(PLAYLISTS_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(list)) return [];
+    return list
+      .filter(
+        (p) =>
+          p && typeof p.id === 'string' && typeof p.name === 'string' && Array.isArray(p.ids)
+      )
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        ids: p.ids.filter((x) => typeof x === 'string'),
+      }));
+  } catch {
+    return [];
+  }
+}
+
+function savePlaylists(list) {
+  try {
+    localStorage.setItem(PLAYLISTS_KEY, JSON.stringify(list));
+  } catch {
+    /* private mode or full quota — playlists simply won't persist */
+  }
+  window.dispatchEvent(new CustomEvent(PLAYLISTS_EVENT, { detail: { list } }));
+  return list;
+}
+
+export function getPlaylist(id) {
+  return getPlaylists().find((p) => p.id === id) || null;
+}
+
+/** Create a playlist from a (trimmed) name. Returns it, or null if unnamed. */
+export function createPlaylist(name) {
+  const clean = String(name || '').trim().slice(0, 60);
+  if (!clean) return null;
+  const list = getPlaylists();
+  const playlist = { id: newId(), name: clean, ids: [] };
+  list.push(playlist);
+  savePlaylists(list);
+  return playlist;
+}
+
+export function deletePlaylist(id) {
+  savePlaylists(getPlaylists().filter((p) => p.id !== id));
+}
+
+export function addToPlaylist(playlistId, videoId) {
+  const list = getPlaylists();
+  const playlist = list.find((p) => p.id === playlistId);
+  if (!playlist || playlist.ids.includes(videoId)) return;
+  playlist.ids.push(videoId);
+  savePlaylists(list);
+}
+
+export function removeFromPlaylist(playlistId, videoId) {
+  const list = getPlaylists();
+  const playlist = list.find((p) => p.id === playlistId);
+  if (!playlist) return;
+  playlist.ids = playlist.ids.filter((x) => x !== videoId);
+  savePlaylists(list);
+}
+
+/** Playlists that already contain a video. */
+export function playlistsContaining(videoId) {
+  return getPlaylists().filter((p) => p.ids.includes(videoId));
+}
+
+export function isInAnyPlaylist(videoId) {
+  return getPlaylists().some((p) => p.ids.includes(videoId));
+}
+
+/* --------------------------------------------------------------------------
+   Recently played — the last few videos opened on the watch page.
+   -------------------------------------------------------------------------- */
+const RECENT_KEY = 'beatavo:recently-played';
+
+/** How many videos the "Recently played" row remembers. */
+export const RECENT_MAX = 12;
+
+/** Video ids, most recent first. */
+export function getRecentlyPlayed() {
+  try {
+    const raw = localStorage.getItem(RECENT_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list.filter((x) => typeof x === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Remember a video as just played (deduped, capped at RECENT_MAX). */
+export function pushRecentlyPlayed(videoId) {
+  if (!videoId) return;
+  const list = [videoId, ...getRecentlyPlayed().filter((x) => x !== videoId)].slice(
+    0,
+    RECENT_MAX
+  );
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+  } catch {
+    /* ignore */
+  }
+}
