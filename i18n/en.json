@@ -118,5 +118,22 @@
   "loop_video": "Loop this video",
   "not_found_title": "Page not found",
   "not_found_body": "We couldn't find that page. It may have moved — or maybe you just want to dance.",
-  "not_found_random": "Play something random"
+  "not_found_random": "Play something random",
+  "nav_favourites": "Favourites",
+  "theme_toggle": "Toggle dark mode",
+  "explore_tags": "Explore by tag",
+  "see_all": "See all",
+  "more_like_this": "More like this",
+  "queue_empty": "Nothing else queued",
+  "queue_move_up": "Move up",
+  "queue_move_down": "Move down",
+  "queue_remove": "Remove from queue",
+  "queue_removed": "Removed from queue",
+  "favourites_title": "Favourites",
+  "favourites_subtitle": "Your saved dances, kept only on this device.",
+  "top_dances": "Your top dances",
+  "top_dances_empty": "Play a few dances and the ones you love most will appear here.",
+  "top_dances_plays": "{n} plays",
+  "loop_on": "Loop on",
+  "loop_off": "Loop off"
 }

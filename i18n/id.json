@@ -118,5 +118,22 @@
   "loop_video": "Ulangi video ini",
   "not_found_title": "Halaman tidak ditemukan",
   "not_found_body": "Kami tidak menemukan halaman itu. Mungkin sudah dipindahkan — atau kamu hanya ingin menari.",
-  "not_found_random": "Putar acak"
+  "not_found_random": "Putar acak",
+  "nav_favourites": "Favorit",
+  "theme_toggle": "Alihkan mode gelap",
+  "explore_tags": "Jelajahi berdasarkan tag",
+  "see_all": "Lihat semua",
+  "more_like_this": "Lebih banyak seperti ini",
+  "queue_empty": "Tidak ada lagi di antrean",
+  "queue_move_up": "Pindah ke atas",
+  "queue_move_down": "Pindah ke bawah",
+  "queue_remove": "Hapus dari antrean",
+  "queue_removed": "Dihapus dari antrean",
+  "favourites_title": "Favorit",
+  "favourites_subtitle": "Tarian tersimpanmu, hanya di perangkat ini.",
+  "top_dances": "Tarian paling sering kamu tonton",
+  "top_dances_empty": "Tonton beberapa tarian dan yang paling kamu suka akan muncul di sini.",
+  "top_dances_plays": "{n} kali diputar",
+  "loop_on": "Putar ulang aktif",
+  "loop_off": "Putar ulang nonaktif"
 }

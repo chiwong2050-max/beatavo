@@ -118,5 +118,22 @@
   "loop_video": "تكرار هذا الفيديو",
   "not_found_title": "الصفحة غير موجودة",
   "not_found_body": "لم نتمكن من العثور على هذه الصفحة. ربما تم نقلها — أو ربما تريد الرقص فقط.",
-  "not_found_random": "شغّل شيئًا عشوائيًا"
+  "not_found_random": "شغّل شيئًا عشوائيًا",
+  "nav_favourites": "المفضلة",
+  "theme_toggle": "تبديل الوضع الداكن",
+  "explore_tags": "تصفّح حسب الوسم",
+  "see_all": "عرض الكل",
+  "more_like_this": "المزيد مثل هذا",
+  "queue_empty": "لا شيء آخر في القائمة",
+  "queue_move_up": "تحريك لأعلى",
+  "queue_move_down": "تحريك لأسفل",
+  "queue_remove": "إزالة من القائمة",
+  "queue_removed": "أُزيل من القائمة",
+  "favourites_title": "المفضلة",
+  "favourites_subtitle": "رقصاتك المحفوظة، على هذا الجهاز فقط.",
+  "top_dances": "أكثر رقصاتك مشاهدة",
+  "top_dances_empty": "شاهد بعض الرقصات وسيظهر هنا ما تحبه أكثر.",
+  "top_dances_plays": "{n} مرات تشغيل",
+  "loop_on": "تكرار التشغيل مفعّل",
+  "loop_off": "تكرار التشغيل متوقف"
 }

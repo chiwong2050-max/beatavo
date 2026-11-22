@@ -118,5 +118,22 @@
   "loop_video": "Lire cette vidéo en boucle",
   "not_found_title": "Page introuvable",
   "not_found_body": "Nous n'avons pas trouvé cette page. Elle a peut-être été déplacée — ou tu veux juste danser.",
-  "not_found_random": "Lire une vidéo au hasard"
+  "not_found_random": "Lire une vidéo au hasard",
+  "nav_favourites": "Favoris",
+  "theme_toggle": "Activer le mode sombre",
+  "explore_tags": "Explorer par étiquette",
+  "see_all": "Tout voir",
+  "more_like_this": "Plus comme ceci",
+  "queue_empty": "Rien d'autre dans la file",
+  "queue_move_up": "Monter",
+  "queue_move_down": "Descendre",
+  "queue_remove": "Retirer de la file",
+  "queue_removed": "Retiré de la file",
+  "favourites_title": "Favoris",
+  "favourites_subtitle": "Tes danses enregistrées, uniquement sur cet appareil.",
+  "top_dances": "Tes danses les plus regardées",
+  "top_dances_empty": "Regarde quelques danses et celles que tu préfères apparaîtront ici.",
+  "top_dances_plays": "{n} lectures",
+  "loop_on": "Lecture en boucle activée",
+  "loop_off": "Lecture en boucle désactivée"
 }

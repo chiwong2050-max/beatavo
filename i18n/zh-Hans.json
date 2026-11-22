@@ -118,5 +118,22 @@
   "loop_video": "循环播放此视频",
   "not_found_title": "页面未找到",
   "not_found_body": "我们找不到该页面。它可能已被移动——或者你只是想跳舞。",
-  "not_found_random": "随机播放一个"
+  "not_found_random": "随机播放一个",
+  "nav_favourites": "收藏",
+  "theme_toggle": "切换深色模式",
+  "explore_tags": "按标签浏览",
+  "see_all": "查看全部",
+  "more_like_this": "更多类似内容",
+  "queue_empty": "队列中没有其他视频",
+  "queue_move_up": "上移",
+  "queue_move_down": "下移",
+  "queue_remove": "从队列中移除",
+  "queue_removed": "已从队列中移除",
+  "favourites_title": "收藏",
+  "favourites_subtitle": "你收藏的舞蹈，仅保存在此设备上。",
+  "top_dances": "你最常看的舞蹈",
+  "top_dances_empty": "多看几个舞蹈，你最喜欢的会显示在这里。",
+  "top_dances_plays": "{n} 次播放",
+  "loop_on": "已开启循环",
+  "loop_off": "已关闭循环"
 }

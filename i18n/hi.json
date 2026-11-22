@@ -118,5 +118,22 @@
   "loop_video": "इस वीडियो को लूप करें",
   "not_found_title": "पेज नहीं मिला",
   "not_found_body": "हमें वह पेज नहीं मिला। यह शायद हट गया है — या शायद आपको बस नाचना है।",
-  "not_found_random": "कुछ रैंडम चलाएँ"
+  "not_found_random": "कुछ रैंडम चलाएँ",
+  "nav_favourites": "पसंदीदा",
+  "theme_toggle": "डार्क मोड टॉगल करें",
+  "explore_tags": "टैग से ब्राउज़ करें",
+  "see_all": "सभी देखें",
+  "more_like_this": "इस जैसे और",
+  "queue_empty": "कतार में और कुछ नहीं",
+  "queue_move_up": "ऊपर ले जाएँ",
+  "queue_move_down": "नीचे ले जाएँ",
+  "queue_remove": "कतार से हटाएँ",
+  "queue_removed": "कतार से हटाया गया",
+  "favourites_title": "पसंदीदा",
+  "favourites_subtitle": "आपके सहेजे गए डांस, केवल इस डिवाइस पर।",
+  "top_dances": "आपके सबसे ज़्यादा देखे गए डांस",
+  "top_dances_empty": "कुछ डांस देखें और आपके पसंदीदा यहाँ दिखेंगे।",
+  "top_dances_plays": "{n} बार चलाया गया",
+  "loop_on": "लूप चालू",
+  "loop_off": "लूप बंद"
 }

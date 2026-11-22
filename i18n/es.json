@@ -118,5 +118,22 @@
   "loop_video": "Repetir este vídeo",
   "not_found_title": "Página no encontrada",
   "not_found_body": "No encontramos esa página. Puede que se haya movido — o quizá solo quieras bailar.",
-  "not_found_random": "Reproducir algo aleatorio"
+  "not_found_random": "Reproducir algo aleatorio",
+  "nav_favourites": "Favoritos",
+  "theme_toggle": "Activar el modo oscuro",
+  "explore_tags": "Explorar por etiqueta",
+  "see_all": "Ver todo",
+  "more_like_this": "Más como esto",
+  "queue_empty": "No hay más en la cola",
+  "queue_move_up": "Subir",
+  "queue_move_down": "Bajar",
+  "queue_remove": "Quitar de la cola",
+  "queue_removed": "Eliminado de la cola",
+  "favourites_title": "Favoritos",
+  "favourites_subtitle": "Tus bailes guardados, solo en este dispositivo.",
+  "top_dances": "Tus bailes más vistos",
+  "top_dances_empty": "Reproduce algunos bailes y los que más te gusten aparecerán aquí.",
+  "top_dances_plays": "{n} reproducciones",
+  "loop_on": "Repetición activada",
+  "loop_off": "Repetición desactivada"
 }
