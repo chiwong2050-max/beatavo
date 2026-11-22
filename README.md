@@ -19,6 +19,15 @@ Highlights:
 - **Playlists** — build named lists saved in `localStorage` and play a whole list
   continuously from `/playlists/`.
 - A **"Recently played"** row on the home page (the last 12 videos opened).
+- A **"Favourites"** page (`/favourites/`) with your saved dances **and** a
+  **"Your top dances"** list built from a private, on-device play tally.
+- A **"Up next"** panel on the watch page: the next 5 videos, reorderable with arrow
+  buttons and removable from the queue.
+- A **"More like this"** row under each video (shared tags first, then the same section).
+- Auto-built **home page sections per tag** (any tag with 3+ videos, e.g. Animals, Party,
+  Robots).
+- A **light/dark theme toggle** that follows `prefers-color-scheme` by default and
+  remembers your choice.
 - A **Kids mode lock** that keeps the app on `/kids/`, unlocked by a grown-up maths
   question.
 - **Keyboard shortcuts** on the watch page (space / N / S / F) with a `?` help popup.
@@ -61,6 +70,8 @@ beatavo/
 │  └─ index.html               # Minimal, chrome-free player for <iframe> embeds
 ├─ kids/
 │  └─ index.html               # Kids-only page with extra-large controls
+├─ favourites/
+│  └─ index.html               # Saved dances + "Your top dances" (per-user, noindex)
 ├─ privacy/
 │  └─ index.html               # Family-safe privacy page
 ├─ i18n/
@@ -72,13 +83,15 @@ beatavo/
 │  ├─ css/
 │  │  └─ styles.css            # Design tokens + all component styles
 │  ├─ js/
-│  │  ├─ data.js               # Shared data layer (videos, tags, favourites, playlists, recently played)
+│  │  ├─ data.js               # Shared data layer (videos, tags, favourites, playlists, plays)
 │  │  ├─ i18n.js               # Tiny translation layer (auto-detect + picker)
+│  │  ├─ theme.js              # Light/dark theme toggle (follows prefers-color-scheme)
 │  │  ├─ home.js               # Home page logic
 │  │  ├─ kids.js               # Kids page logic
 │  │  ├─ tag.js                # Category (tag) page logic
 │  │  ├─ challenge.js          # Dance challenge logic
 │  │  ├─ playlists.js          # Playlists page logic
+│  │  ├─ favourites.js         # Favourites page logic (saved dances + top dances)
 │  │  ├─ playlist-dialog.js    # Shared "Add to playlist" dialog + card/watch buttons
 │  │  ├─ kids-mode.js          # Kids mode lock + grown-up maths gate
 │  │  ├─ install-prompt.js     # Dismissible "Add to home screen" banner
@@ -164,6 +177,20 @@ Videos are read at runtime from [`data/videos.json`](data/videos.json). Each ent
 - **Recently played** — the watch page records each video opened under
   `beatavo:recently-played` (deduped, capped at the last **12**), and the home page
   shows a horizontally-scrolling "Recently played" row when there is history.
+- **Up next queue** (watch page) — the panel lists the **next 5** videos in the queue
+  with arrow buttons to move an item up or down and a button to remove it. Reordering
+  never moves an item above the one currently playing.
+- **More like this** — under the player, a row of recommendations chosen by shared tags
+  first, then by the same section, all from the current catalogue.
+- **Home page tag sections** — the home page builds one horizontal row per tag that has
+  **3 or more videos** straight from `data/videos.json` (the same threshold as the tag
+  pages and the sitemap), each with a **See all** link to `/tag/?t=<tag>`.
+- **Favourites page** (`/favourites/`) — your saved dances plus a **"Your top dances"**
+  list, ranked from a **private, on-device play tally** (`beatavo:plays`, which counts a
+  video once each time playback actually starts). Nothing is sent anywhere.
+- **Light/dark theme** — the header toggle pins a choice in `beatavo:theme`; otherwise the
+  theme follows the operating system. A tiny inline script sets it before first paint so
+  there is no flash of the wrong theme.
 - **Kids mode lock** — the header toggle stores `beatavo:kids-mode`; while it is on,
   every other page redirects to `/kids/` on load. On the kids page a **Grown-ups: exit**
   button opens a simple addition question, and only a correct answer clears the lock.
@@ -183,6 +210,8 @@ keys are the only state:
 | `beatavo:favourites` | Hearted video ids |
 | `beatavo:playlists` | Named playlists and their video ids |
 | `beatavo:recently-played` | The last 12 videos opened on the watch page |
+| `beatavo:plays` | Private per-video play tally (powers "Your top dances") |
+| `beatavo:theme` | Pinned light/dark theme (absent = follow the system) |
 | `beatavo:kids-mode` | `1` while the kids lock is on |
 | `beatavo:install-dismissed` | `1` once the install banner is dismissed |
 | `beatavo:challenge-streak` | Dance-challenge day streak |
@@ -213,16 +242,23 @@ Then open <http://localhost:4173/>. Try:
 
 - The **Play all** and **Shuffle play** buttons, the **Beatavo / Beatavo Kids / Favourites**
   tabs, and the **search** box (filters by title).
-- The **Dance of the day** hero and the **Browse by tag** chips, which link to
-  `/tag/?t=animals`, `/tag/?t=party`, `/tag/?t=kids-favourites`, and so on.
+- The **Dance of the day** hero, the **Browse by tag** chips, and the auto-built
+  **per-tag home sections**, which link to `/tag/?t=animals`, `/tag/?t=party`,
+  `/tag/?t=kids-favourites`, and so on.
 - `/challenge/` for the five-song dance challenge, with a 3-2-1 countdown and a local
   streak counter.
 - Tapping the **heart** on any card saves it to **Favourites** (stored in `localStorage`,
-  no account needed).
+  no account needed); `/favourites/` gathers the saved dances and shows **"Your top
+  dances"** once you have played a few.
+- The **theme toggle** in the header — flip it to light or dark and reload; your choice
+  sticks (and with no choice saved, the theme follows your system setting).
 - `/kids/` for a stripped-back kids-only page with extra-large buttons.
 - Opening a video to land on `/watch/?v=VIDEO_ID` — the title, description and Open
   Graph tags update per video, so the link is shareable. The **Share** button uses the
   native share sheet or copies the link; **Embed** copies an `<iframe>` snippet.
+- The **"Up next"** panel: use the ↑/↓ buttons to reorder the next 5 videos and the ✕
+  button to drop one; the **"More like this"** row beneath the player suggests what to
+  watch next.
 - **Next / Previous** (and the ← / → arrow keys) for continuous play — when a video
   ends the next one starts automatically. Scroll away and a **mini player** sticks to
   the bottom with play/pause, next/previous and an expand button.
@@ -268,8 +304,8 @@ and add its entry to `LOCALES` in `assets/js/i18n.js`.
   The sitemap lists the home, kids, challenge and privacy pages, **one URL per
   `/watch/?v=ID` page**, and **one URL per category** (`/tag/?t=<tag>`) for every tag
   with at least 3 videos. Re-run it whenever `data/videos.json` changes. The
-  `/playlists/` page is deliberately **`noindex`** (its content is per-user), so it is
-  left out of the sitemap.
+  `/playlists/` and `/favourites/` pages are deliberately **`noindex`** (their content is
+  per-user), so they are left out of the sitemap.
 - Each watch page injects **schema.org `VideoObject`** JSON-LD (name, description,
   thumbnail, upload date, embed URL) for rich search results.
 
@@ -296,7 +332,11 @@ npm run icons
 
 - Semantic landmarks, a skip link, and the WAI-ARIA tabs pattern with arrow-key support.
 - Large tap targets (≥48px), visible focus rings, and `prefers-reduced-motion` support.
-- Light and dark themes via `prefers-color-scheme`.
+- Light and dark themes via `prefers-color-scheme`, with a header toggle that remembers
+  your choice (`beatavo:theme`). Text and icons meet **WCAG AA** contrast in both themes.
+- Every icon-only button (theme toggle, queue reorder/remove, loop, share, hearts, mini
+  player, dialogs) carries an `aria-label`, and the theme toggle exposes its state with
+  `aria-pressed`.
 - No render-blocking third-party resources: the YouTube iframe is only loaded **after**
   a click (thumbnail "facade" pattern), which keeps the initial page fast.
 - `preconnect` hints to `https://i.ytimg.com` on every page so thumbnail images start
