@@ -66,6 +66,26 @@
         </div>
       </section>
 
+      <section class="dotd" id="danceOfTheDay" aria-labelledby="dotdLabel" hidden>
+        <h2 class="dotd__label" id="dotdLabel" data-i18n="dance_of_the_day">Dance of the day</h2>
+        <p class="dotd__hint" data-i18n="dance_of_the_day_body">Today's pick — the same for everyone, every day.</p>
+        <a class="dotd__card" id="dotdLink" href="#">
+          <span class="dotd__thumb">
+            <img id="dotdThumb" src="" alt="" width="480" height="360" loading="lazy" decoding="async">
+            <span class="dotd__play" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="#fff" d="M8 5.14v13.72c0 .8.87 1.3 1.56.9l10.8-6.86a1.06 1.06 0 0 0 0-1.8L9.56 4.24A1.06 1.06 0 0 0 8 5.14Z"/></svg>
+            </span>
+          </span>
+          <span class="dotd__body">
+            <span class="dotd__title" id="dotdVideoTitle"></span>
+            <span class="dotd__cta">
+              <span data-i18n="btn_watch_now">Watch now</span>
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8.5 5.5A1 1 0 0 0 7 6.37v11.26a1 1 0 0 0 1.5.87l8.5-5.63a1 1 0 0 0 0-1.74L8.5 5.5Z"/></svg>
+            </span>
+          </span>
+        </a>
+      </section>
+
       <div class="tabs" role="tablist" aria-label="Video sections">
         <button class="tab" role="tab" id="tab-main" data-section="main"
                 aria-selected="true" aria-controls="videoGrid" data-i18n="tab_main">Beatavo</button>

@@ -9,6 +9,7 @@ import {
   watchHref,
   getFavourites,
   toggleFavourite,
+  danceOfTheDay,
   FAVOURITES_EVENT,
 } from './data.js';
 import { initI18n, t } from './i18n.js';
@@ -20,6 +21,10 @@ const tabs = Array.from(document.querySelectorAll('.tab'));
 const playAllBtn = document.getElementById('playAll');
 const shuffleBtn = document.getElementById('shufflePlay');
 const searchInput = document.getElementById('search');
+const dotdSection = document.getElementById('danceOfTheDay');
+const dotdLink = document.getElementById('dotdLink');
+const dotdThumb = document.getElementById('dotdThumb');
+const dotdTitle = document.getElementById('dotdVideoTitle');
 
 /* Views the grid can show: the two sections, plus the saved favourites.
    Values are i18n keys resolved at render time. */
@@ -187,10 +192,23 @@ async function init() {
     }
     videos = await loadVideos('./data/videos.json');
     grid.removeAttribute('aria-busy');
+    renderDanceOfTheDay();
     setSection(location.hash.replace('#', '') || 'main');
   } catch (err) {
     showError(err.message || 'Unknown error.');
   }
+}
+
+/** Fill the "Dance of the day" hero with today's deterministic pick. */
+function renderDanceOfTheDay() {
+  if (!dotdSection) return;
+  const pick = danceOfTheDay(videos);
+  if (!pick) return;
+  dotdLink.href = `./watch/?v=${encodeURIComponent(pick.id)}&autoplay=1`;
+  dotdThumb.src = thumbnailUrl(pick.id);
+  dotdThumb.alt = '';
+  dotdTitle.textContent = pick.title;
+  dotdSection.hidden = false;
 }
 
 /* ---- Events ---- */

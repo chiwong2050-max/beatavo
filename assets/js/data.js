@@ -72,6 +72,18 @@ export function formatDate(iso) {
   });
 }
 
+/**
+ * Deterministically pick one video per calendar day (UTC) so that everyone
+ * sees the same "Dance of the day". No storage, no randomness.
+ */
+export function danceOfTheDay(videos, date = new Date()) {
+  if (!videos || videos.length === 0) return null;
+  const day = Math.floor(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) / 86400000
+  );
+  return videos[day % videos.length];
+}
+
 /* --------------------------------------------------------------------------
    Favourites — stored locally in the browser (no accounts, no server).
    -------------------------------------------------------------------------- */

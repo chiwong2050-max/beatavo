@@ -1,7 +1,7 @@
 /* Beatavo service worker — caches the app shell only.
    Videos live on YouTube and are never cached or intercepted. */
 
-const VERSION = 'v4';
+const VERSION = 'v5';
 const SHELL_CACHE = `beatavo-shell-${VERSION}`;
 
 const APP_SHELL = [
