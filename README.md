@@ -9,6 +9,14 @@ music videos hosted on YouTube. Videos are grouped into two sections:
 There is **no backend and no framework** — just static HTML, CSS and vanilla JavaScript.
 It is designed to be mobile-first, clutter-free and quick to load.
 
+Highlights:
+
+- A **"Dance of the day"** hero that picks the same video for everyone each day.
+- **Category pages** driven by an optional `tags` field (`/tag/?t=animals`).
+- A **Dance challenge** mode: five random songs back to back with a 3-2-1 countdown.
+- **Share** (Web Share API with a copy-link fallback) and **Embed** (a copyable iframe
+  snippet pointing at a minimal `/embed/` player) — no third-party scripts.
+
 ---
 
 ## Tech stack
@@ -31,9 +39,15 @@ No API keys, secrets or trackers are used anywhere in the code.
 
 ```
 beatavo/
-├─ index.html                  # Home: "Play all" + "Shuffle play", tabs, search, grid
+├─ index.html                  # Home: Dance of the day, tag chips, tabs, search, grid
 ├─ watch/
 │  └─ index.html               # Player page — shareable URL /watch/?v=VIDEO_ID
+├─ tag/
+│  └─ index.html               # Category page for one tag — /tag/?t=animals
+├─ challenge/
+│  └─ index.html               # Dance challenge — 5 songs with a 3-2-1 countdown
+├─ embed/
+│  └─ index.html               # Minimal, chrome-free player for <iframe> embeds
 ├─ kids/
 │  └─ index.html               # Kids-only page with extra-large controls
 ├─ privacy/
@@ -47,11 +61,14 @@ beatavo/
 │  ├─ css/
 │  │  └─ styles.css            # Design tokens + all component styles
 │  ├─ js/
-│  │  ├─ data.js               # Shared data layer (load / normalise / sort / favourites)
+│  │  ├─ data.js               # Shared data layer (load / normalise / sort / tags / favourites)
 │  │  ├─ i18n.js               # Tiny translation layer (auto-detect + picker)
 │  │  ├─ home.js               # Home page logic
 │  │  ├─ kids.js               # Kids page logic
-│  │  └─ player.js             # Watch page logic (embeds, queue, mini player, sharing)
+│  │  ├─ tag.js                # Category (tag) page logic
+│  │  ├─ challenge.js          # Dance challenge logic
+│  │  ├─ embed.js              # Embeddable player logic
+│  │  └─ player.js             # Watch page logic (embeds, queue, mini player, share, embed)
 │  ├─ icons/
 │  │  ├─ favicon.svg           # Scalable favicon / brand mark
 │  │  ├─ icon-192.png          # PWA icon
@@ -64,7 +81,7 @@ beatavo/
 │  ├─ generate-icons.mjs       # Regenerates every icon above (no dependencies)
 │  ├─ generate-sitemap.mjs     # Writes sitemap.xml + robots.txt from data/videos.json
 │  └─ serve.mjs                # Tiny dependency-free static preview server
-├─ sitemap.xml                 # Generated — one URL per page and per watch page
+├─ sitemap.xml                 # Generated — one URL per page, watch page and tag page
 ├─ robots.txt                  # Generated — allows crawling, points at the sitemap
 ├─ manifest.json               # PWA manifest (name: Beatavo, theme #7c4dff)
 ├─ sw.js                       # Service worker — caches the app shell only
@@ -83,13 +100,18 @@ Videos are read at runtime from [`data/videos.json`](data/videos.json). Each ent
   "id": "dQw4w9WgXcQ",
   "title": "Funky Robots Dance Along",
   "section": "main",
-  "published": "2026-01-05"
+  "published": "2026-01-05",
+  "tags": ["robots", "party"]
 }
 ```
 
 - `id` — the YouTube video id (the part after `watch?v=`).
 - `section` — either `"main"` or `"kids"`.
 - `published` — an ISO date. The grid always sorts **newest first**.
+- `tags` — **optional** list of categories (lowercase, e.g. `animals`, `party`,
+  `kids-favourites`). They drive the category pages and the "Browse by tag" chips.
+  A tag only gets its own page once it has **at least 3 videos** — smaller tags are
+  hidden rather than shown as near-empty pages.
 
 > **The committed `data/videos.json` contains six clearly-marked `[SAMPLE]` entries
 > with placeholder ids.** It exists so the app runs out of the box.
@@ -98,6 +120,25 @@ Videos are read at runtime from [`data/videos.json`](data/videos.json). Each ent
 > scheduled job that pulls a channel/playlist from the YouTube Data API and writes
 > this JSON). Keep that script server-side: **never put a YouTube API key in this
 > front-end repository.**
+
+---
+
+## Features
+
+- **Dance of the day** — the home hero picks a video deterministically from the UTC
+  calendar date, so every visitor sees the same pick each day (no storage, no
+  randomness).
+- **Category pages** (`/tag/?t=<tag>`) — each has its own `<title>`, meta description
+  and Open Graph tags, plus a **Play all** button that keeps playing inside that
+  category.
+- **Dance challenge** (`/challenge/`) — plays **5 random videos** back to back with a
+  "Get ready" 3-2-1 countdown between songs and a "You danced 5 songs!" finish screen.
+  No accounts: the only thing stored is a local streak counter
+  (`beatavo:challenge-streak` in `localStorage`), which advances once per day.
+- **Share** — the watch page's Share button opens the native share sheet where
+  available, and otherwise copies the canonical link.
+- **Embed** — the watch page's Embed button copies an `<iframe>` snippet that points
+  at the minimal `/embed/?v=ID` player, which is `noindex` and free of site chrome.
 
 ---
 
@@ -124,11 +165,16 @@ Then open <http://localhost:4173/>. Try:
 
 - The **Play all** and **Shuffle play** buttons, the **Beatavo / Beatavo Kids / Favourites**
   tabs, and the **search** box (filters by title).
+- The **Dance of the day** hero and the **Browse by tag** chips, which link to
+  `/tag/?t=animals`, `/tag/?t=party`, `/tag/?t=kids-favourites`, and so on.
+- `/challenge/` for the five-song dance challenge, with a 3-2-1 countdown and a local
+  streak counter.
 - Tapping the **heart** on any card saves it to **Favourites** (stored in `localStorage`,
   no account needed).
 - `/kids/` for a stripped-back kids-only page with extra-large buttons.
 - Opening a video to land on `/watch/?v=VIDEO_ID` — the title, description and Open
-  Graph tags update per video, so the link is shareable.
+  Graph tags update per video, so the link is shareable. The **Share** button uses the
+  native share sheet or copies the link; **Embed** copies an `<iframe>` snippet.
 - **Next / Previous** (and the ← / → arrow keys) for continuous play — when a video
   ends the next one starts automatically. Scroll away and a **mini player** sticks to
   the bottom with play/pause, next/previous and an expand button.
@@ -163,8 +209,9 @@ and add its entry to `LOCALES` in `assets/js/i18n.js`.
   SITE_URL=https://example.com npm run sitemap
   ```
 
-  The sitemap lists the home, kids and privacy pages plus **one URL per
-  `/watch/?v=ID` page**. Re-run it whenever `data/videos.json` changes.
+  The sitemap lists the home, kids, challenge and privacy pages, **one URL per
+  `/watch/?v=ID` page**, and **one URL per category** (`/tag/?t=<tag>`) for every tag
+  with at least 3 videos. Re-run it whenever `data/videos.json` changes.
 - Each watch page injects **schema.org `VideoObject`** JSON-LD (name, description,
   thumbnail, upload date, embed URL) for rich search results.
 

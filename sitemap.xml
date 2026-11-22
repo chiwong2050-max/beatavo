@@ -13,6 +13,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://beatavo.com/challenge/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://beatavo.com/watch/?v=sampleVid001</loc>
     <lastmod>2026-01-05</lastmod>
     <priority>0.6</priority>
@@ -41,6 +47,24 @@
     <loc>https://beatavo.com/watch/?v=sampleVid006</loc>
     <lastmod>2025-12-01</lastmod>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://beatavo.com/tag/?t=animals</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://beatavo.com/tag/?t=kids-favourites</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://beatavo.com/tag/?t=party</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://beatavo.com/privacy/</loc>

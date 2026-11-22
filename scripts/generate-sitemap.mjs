@@ -1,7 +1,7 @@
 /**
  * Beatavo — sitemap.xml + robots.txt generator.
- * Reads data/videos.json and writes one URL per watch page, plus the static
- * pages. Dependency-free.
+ * Reads data/videos.json and writes one URL per watch page, one per category
+ * (tag) page, and the static pages. Dependency-free.
  *
  * Usage:  npm run sitemap              (or: node scripts/generate-sitemap.mjs)
  *         SITE_URL=https://example.com npm run sitemap
@@ -14,6 +14,9 @@ const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 
 /* Production origin. Override with SITE_URL when deploying elsewhere. */
 const BASE_URL = (process.env.SITE_URL || 'https://beatavo.com').replace(/\/+$/, '');
+
+/* A tag only gets its own page once it has this many videos (mirrors data.js). */
+const MIN_TAG_VIDEOS = 3;
 
 function xmlEscape(str) {
   return String(str).replace(
@@ -36,6 +39,24 @@ function normalise(list) {
   );
 }
 
+/** Tags with at least `MIN_TAG_VIDEOS` videos — same rule as the front-end. */
+function collectTags(list) {
+  const counts = new Map();
+  for (const v of list) {
+    const tags = Array.isArray(v.tags) ? v.tags : [];
+    const unique = new Set(
+      tags
+        .filter((x) => typeof x === 'string')
+        .map((x) => x.trim().toLowerCase())
+        .filter(Boolean)
+    );
+    for (const tag of unique) counts.set(tag, (counts.get(tag) || 0) + 1);
+  }
+  return Array.from(counts, ([tag, count]) => ({ tag, count }))
+    .filter((entry) => entry.count >= MIN_TAG_VIDEOS)
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+}
+
 function urlEntry({ loc, lastmod, changefreq, priority }) {
   const lines = ['  <url>', `    <loc>${xmlEscape(loc)}</loc>`];
   if (lastmod) lines.push(`    <lastmod>${lastmod}</lastmod>`);
@@ -53,6 +74,7 @@ async function main() {
   const entries = [
     { loc: `${BASE_URL}/`, changefreq: 'daily', priority: '1.0', lastmod: today },
     { loc: `${BASE_URL}/kids/`, changefreq: 'weekly', priority: '0.8', lastmod: today },
+    { loc: `${BASE_URL}/challenge/`, changefreq: 'weekly', priority: '0.6', lastmod: today },
   ];
 
   for (const v of videos) {
@@ -60,6 +82,15 @@ async function main() {
       loc: `${BASE_URL}/watch/?v=${encodeURIComponent(v.id)}`,
       lastmod: (v.published || '').slice(0, 10) || today,
       priority: '0.6',
+    });
+  }
+
+  for (const { tag } of collectTags(videos)) {
+    entries.push({
+      loc: `${BASE_URL}/tag/?t=${encodeURIComponent(tag)}`,
+      changefreq: 'weekly',
+      priority: '0.5',
+      lastmod: today,
     });
   }
 
