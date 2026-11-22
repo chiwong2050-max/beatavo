@@ -290,6 +290,30 @@ a {
   color: var(--color-text);
 }
 
+/* Language picker — always visible, compact on small screens. */
+.lang {
+  display: inline-flex;
+  align-items: center;
+}
+
+.lang__select {
+  appearance: none;
+  -webkit-appearance: none;
+  min-height: 44px;
+  padding: 0 var(--space-5) 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface-2);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lang__select:hover {
+  border-color: var(--color-brand);
+}
+
 @media (min-width: 40rem) {
   .header-nav {
     display: flex;

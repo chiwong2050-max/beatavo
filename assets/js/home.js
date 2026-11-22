@@ -4,7 +4,6 @@
  * and wires "Play all" / "Shuffle play".
  */
 import {
-  SECTIONS,
   loadVideos,
   thumbnailUrl,
   watchHref,
@@ -12,6 +11,7 @@ import {
   toggleFavourite,
   FAVOURITES_EVENT,
 } from './data.js';
+import { initI18n, t } from './i18n.js';
 
 const grid = document.getElementById('videoGrid');
 const sectionHeadTitle = document.getElementById('sectionTitle');
@@ -21,17 +21,19 @@ const playAllBtn = document.getElementById('playAll');
 const shuffleBtn = document.getElementById('shufflePlay');
 const searchInput = document.getElementById('search');
 
-/* Views the grid can show: the two sections, plus the saved favourites. */
+/* Views the grid can show: the two sections, plus the saved favourites.
+   Values are i18n keys resolved at render time. */
 const VIEWS = {
-  main: { label: SECTIONS.main.label, title: SECTIONS.main.title },
-  kids: { label: SECTIONS.kids.label, title: SECTIONS.kids.title },
-  favourites: { label: 'Favourites', title: 'Favourites' },
+  main: { label: 'tab_main' },
+  kids: { label: 'tab_kids' },
+  favourites: { label: 'tab_favourites' },
 };
 
 let videos = [];
 let activeSection = 'main';
 let query = '';
 let favourites = new Set(getFavourites());
+let i18nReady = false;
 
 const PLAY_ICON =
   '<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="#fff" d="M8 5.14v13.72c0 .8.87 1.3 1.56.9l10.8-6.86a1.06 1.06 0 0 0 0-1.8L9.56 4.24A1.06 1.06 0 0 0 8 5.14Z"/></svg>';
@@ -59,7 +61,7 @@ function currentList() {
 
 function cardMarkup(video) {
   const fav = favourites.has(video.id);
-  const label = `${fav ? 'Remove from' : 'Add to'} favourites: ${video.title}`;
+  const label = `${t(fav ? 'fav_remove' : 'fav_add')}: ${video.title}`;
   return `
     <article class="card" data-id="${escapeHtml(video.id)}">
       <a class="card__link" href="${watchHref(video.id)}">
@@ -87,10 +89,12 @@ function stateMarkup(heading, body) {
 
 function render() {
   const list = currentList();
-  const meta = VIEWS[activeSection] || VIEWS.main;
+  const view = VIEWS[activeSection] || VIEWS.main;
+  const viewLabel = t(view.label);
 
-  sectionHeadTitle.textContent = meta.title;
-  sectionCount.textContent = list.length === 1 ? '1 video' : `${list.length} videos`;
+  sectionHeadTitle.textContent = viewLabel;
+  sectionCount.textContent =
+    list.length === 1 ? t('count_one') : t('count_many', { n: list.length });
   grid.setAttribute('aria-labelledby', `tab-${activeSection}`);
 
   tabs.forEach((tab) => {
@@ -104,16 +108,16 @@ function render() {
 
   if (list.length === 0) {
     if (query.trim()) {
-      grid.innerHTML = stateMarkup('No matches', `No videos match "${query.trim()}".`);
-    } else if (activeSection === 'favourites') {
       grid.innerHTML = stateMarkup(
-        'No favourites yet',
-        'Tap the heart on any video to save it here.'
+        t('empty_search_title'),
+        t('empty_search_body', { query: query.trim() })
       );
+    } else if (activeSection === 'favourites') {
+      grid.innerHTML = stateMarkup(t('empty_fav_title'), t('empty_fav_body'));
     } else {
       grid.innerHTML = stateMarkup(
-        'Nothing here yet',
-        `${meta.label} has no videos at the moment. Check back soon!`
+        t('empty_section_title'),
+        t('empty_section_body', { section: viewLabel })
       );
     }
     return;
@@ -130,7 +134,7 @@ function updateFavButtons() {
     const fav = favourites.has(card.dataset.id);
     const title = btn.dataset.title || '';
     btn.setAttribute('aria-pressed', String(fav));
-    btn.setAttribute('aria-label', `${fav ? 'Remove from' : 'Add to'} favourites: ${title}`);
+    btn.setAttribute('aria-label', `${t(fav ? 'fav_remove' : 'fav_add')}: ${title}`);
   });
 }
 
@@ -142,7 +146,7 @@ function setSection(section, { focusTab = false } = {}) {
   }
   render();
   if (focusTab) {
-    tabs.find((t) => t.dataset.section === section)?.focus();
+    tabs.find((t2) => t2.dataset.section === section)?.focus();
   }
 }
 
@@ -163,9 +167,11 @@ function showError(message) {
   grid.removeAttribute('aria-busy');
   grid.innerHTML = `
     <div class="state" style="grid-column: 1 / -1;">
-      <h2>We couldn't load the videos</h2>
+      <h2>${escapeHtml(t('error_title'))}</h2>
       <p>${escapeHtml(message)}</p>
-      <p><button class="btn btn--ghost" type="button" id="retryBtn">Try again</button></p>
+      <p><button class="btn btn--ghost" type="button" id="retryBtn">${escapeHtml(
+        t('error_retry')
+      )}</button></p>
     </div>`;
   document.getElementById('retryBtn')?.addEventListener('click', init);
 }
@@ -175,6 +181,10 @@ async function init() {
   playAllBtn.disabled = true;
   if (shuffleBtn) shuffleBtn.disabled = true;
   try {
+    if (!i18nReady) {
+      await initI18n();
+      i18nReady = true;
+    }
     videos = await loadVideos('./data/videos.json');
     grid.removeAttribute('aria-busy');
     setSection(location.hash.replace('#', '') || 'main');
@@ -191,7 +201,7 @@ tabs.forEach((tab) => {
 // Arrow-key navigation between tabs (WAI-ARIA tabs pattern).
 document.querySelector('.tabs')?.addEventListener('keydown', (e) => {
   if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-  const idx = tabs.findIndex((t) => t.dataset.section === activeSection);
+  const idx = tabs.findIndex((tb) => tb.dataset.section === activeSection);
   const next = e.key === 'ArrowRight' ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
   setSection(tabs[next].dataset.section, { focusTab: true });
 });

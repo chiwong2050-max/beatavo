@@ -30,7 +30,7 @@
   <meta name="twitter:image" content="../assets/images/og.png">
 </head>
 <body class="watch-page">
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main" data-i18n="skip_to_content">Skip to content</a>
 
   <header class="site-header">
     <div class="container site-header__inner">
@@ -39,9 +39,14 @@
         Beatavo
       </a>
       <nav class="header-nav" aria-label="Primary">
-        <a href="../">Videos</a>
-        <a href="../privacy/">Privacy</a>
+        <a href="../" data-i18n="nav_videos">Videos</a>
+        <a href="../kids/" data-i18n="nav_kids">Kids</a>
+        <a href="../privacy/" data-i18n="nav_privacy">Privacy</a>
       </nav>
+      <label class="lang">
+        <span class="visually-hidden" data-i18n="language">Language</span>
+        <select class="lang__select" data-language-picker aria-label="Language"></select>
+      </label>
     </div>
   </header>
 
@@ -53,10 +58,10 @@
         <div class="player__controls">
           <button class="btn btn--ghost" id="prevBtn" type="button">
             <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M15.5 5.5a1 1 0 0 1 1.5.87v11.26a1 1 0 0 1-1.5.87l-8.5-5.63a1 1 0 0 1 0-1.74l8.5-5.63ZM5 5a1 1 0 0 1 2 0v14a1 1 0 1 1-2 0V5Z"/></svg>
-            Previous
+            <span data-i18n="btn_prev">Previous</span>
           </button>
           <button class="btn btn--primary" id="nextBtn" type="button">
-            Next
+            <span data-i18n="btn_next">Next</span>
             <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8.5 5.5A1 1 0 0 0 7 6.37v11.26a1 1 0 0 0 1.5.87l8.5-5.63a1 1 0 0 0 0-1.74L8.5 5.5ZM19 5a1 1 0 0 0-2 0v14a1 1 0 1 0 2 0V5Z"/></svg>
           </button>
         </div>
@@ -67,7 +72,7 @@
         <div class="player__share">
           <button class="btn btn--ghost" id="shareBtn" type="button">
             <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M13 4.5a1 1 0 0 1 1.7-.7l6 6a1 1 0 0 1 0 1.4l-6 6a1 1 0 0 1-1.7-.7V14c-5 .2-8.2 2.1-9.6 5.3a1 1 0 0 1-1.8-.7C2.5 12 6.6 8.2 13 7.6V4.5Z"/></svg>
-            Share
+            <span data-i18n="btn_share">Share</span>
           </button>
           <span class="copy-status" id="shareStatus" role="status" aria-live="polite"></span>
         </div>
@@ -82,32 +87,32 @@
 
   <footer class="site-footer">
     <div class="container site-footer__inner">
-      <p class="site-footer__tagline">Videos are hosted on YouTube.</p>
+      <p class="site-footer__tagline" data-i18n="footer_tagline">Videos are hosted on YouTube.</p>
       <nav class="footer-links" aria-label="Footer">
         <a class="btn btn--coffee" href="https://buymeacoffee.com/aussieloo?ref=beatavo"
            target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 4h14a1 1 0 0 1 1 1v2h1.5A2.5 2.5 0 0 1 23 9.5v1A2.5 2.5 0 0 1 20.5 13H19v1a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V4Zm15 5v2h1.5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H19ZM5 21a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z"/></svg>
-          Buy me a coffee
+          <span data-i18n="footer_coffee">Buy me a coffee</span>
         </a>
-        <a class="footer-link" href="../privacy/">Privacy</a>
+        <a class="footer-link" href="../privacy/" data-i18n="footer_privacy">Privacy</a>
       </nav>
     </div>
   </footer>
 
   <div class="miniplayer" id="miniplayer" role="region" aria-label="Mini player" hidden>
     <span class="miniplayer__info">
-      <span class="miniplayer__label">Now playing</span>
+      <span class="miniplayer__label" data-i18n="mini_now_playing">Now playing</span>
       <span class="miniplayer__title" id="miniTitle"></span>
     </span>
     <div class="miniplayer__controls">
-      <button class="mini-btn" id="miniPrev" type="button" aria-label="Previous video">
+      <button class="mini-btn" id="miniPrev" type="button" data-i18n-aria-label="mini_prev" aria-label="Previous video">
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M15.5 5.5a1 1 0 0 1 1.5.87v11.26a1 1 0 0 1-1.5.87l-8.5-5.63a1 1 0 0 1 0-1.74l8.5-5.63ZM5 5a1 1 0 0 1 2 0v14a1 1 0 1 1-2 0V5Z"/></svg>
       </button>
       <button class="mini-btn mini-btn--primary" id="miniPlay" type="button" aria-label="Play"></button>
-      <button class="mini-btn" id="miniNext" type="button" aria-label="Next video">
+      <button class="mini-btn" id="miniNext" type="button" data-i18n-aria-label="mini_next" aria-label="Next video">
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M8.5 5.5A1 1 0 0 0 7 6.37v11.26a1 1 0 0 0 1.5.87l8.5-5.63a1 1 0 0 0 0-1.74L8.5 5.5ZM19 5a1 1 0 0 0-2 0v14a1 1 0 1 0 2 0V5Z"/></svg>
       </button>
-      <button class="mini-btn" id="miniExpand" type="button" aria-label="Expand player">
+      <button class="mini-btn" id="miniExpand" type="button" data-i18n-aria-label="mini_expand" aria-label="Expand player">
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H4v5M15 4h5v5M15 20h5v-5M9 20H4v-5"/></svg>
       </button>
     </div>

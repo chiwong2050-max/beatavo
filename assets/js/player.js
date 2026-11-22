@@ -3,7 +3,8 @@
  * Lightweight YouTube embeds: a thumbnail facade first, the iframe (nocookie)
  * is only created after a click. Continuous play advances through the queue.
  */
-import { SECTIONS, loadVideos, thumbnailUrl, formatDate } from './data.js';
+import { loadVideos, thumbnailUrl, formatDate } from './data.js';
+import { initI18n, t } from './i18n.js';
 
 const params = new URLSearchParams(location.search);
 const requestedId = params.get('v');
@@ -94,7 +95,7 @@ function renderInfo(video) {
   if (miniTitle) miniTitle.textContent = video.title;
   const bits = [];
   if (video.published) bits.push(formatDate(video.published));
-  bits.push('Hosted on YouTube');
+  bits.push(t('meta_hosted'));
   metaEl.textContent = bits.join(' · ');
 }
 
@@ -120,9 +121,9 @@ function renderQueue() {
 function showFacade(video) {
   stage.innerHTML = `
     <button class="player__facade" id="facade" type="button"
-            aria-label="Play ${escapeHtml(video.title)}">
+            aria-label="${escapeHtml(`${t('action_play')} ${video.title}`)}">
       <img src="${thumbnailUrl(video.id)}" alt="" width="480" height="360">
-      <span class="player__facade-play"><span>${PLAY_SVG} Play</span></span>
+      <span class="player__facade-play"><span>${PLAY_SVG} ${escapeHtml(t('facade_play'))}</span></span>
     </button>`;
   document.getElementById('facade').addEventListener('click', () => startPlayback(video.id));
 }
@@ -208,7 +209,7 @@ function playIndex(newIndex) {
 function updateMiniPlayIcon() {
   if (!miniPlay) return;
   miniPlay.innerHTML = isPlaying ? PAUSE_SM : PLAY_SM;
-  miniPlay.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
+  miniPlay.setAttribute('aria-label', isPlaying ? t('action_pause') : t('action_play'));
 }
 
 function setMiniVisible(visible) {
@@ -256,7 +257,7 @@ function showMessage(heading, body) {
     <div class="state" style="position:absolute; inset:0; border:0; display:grid; place-content:center;">
       <h2>${escapeHtml(heading)}</h2>
       <p>${escapeHtml(body)}</p>
-      <p><a class="btn btn--primary" href="../">Back to Beatavo</a></p>
+      <p><a class="btn btn--primary" href="../">${escapeHtml(t('back_home'))}</a></p>
     </div>`;
   queueEl.innerHTML = '';
   prevBtn.disabled = true;
@@ -265,15 +266,17 @@ function showMessage(heading, body) {
 }
 
 async function init() {
+  await initI18n();
+
   try {
     videos = await loadVideos('../data/videos.json');
   } catch (err) {
-    showMessage("We couldn't load the videos", err.message || 'Please try again later.');
+    showMessage(t('error_title'), err.message || '');
     return;
   }
 
   if (videos.length === 0) {
-    showMessage('Nothing to play yet', 'The video list is empty for now.');
+    showMessage(t('empty_section_title'), t('empty_section_body', { section: t('tab_main') }));
     return;
   }
 
@@ -281,7 +284,7 @@ async function init() {
   queue = videos.filter((v) => v.section === current.section);
   index = Math.max(0, queue.findIndex((v) => v.id === current.id));
 
-  queueTitleEl.textContent = `${SECTIONS[current.section].label} · up next`;
+  queueTitleEl.textContent = t('watch_up_next', { section: t(`tab_${current.section}`) });
   updateUrl(current.id);
   updateMeta(current);
   renderInfo(current);
@@ -311,14 +314,14 @@ shareBtn.addEventListener('click', async () => {
   try {
     if (navigator.share) {
       await navigator.share({ title: `${video.title} · Beatavo`, url });
-      shareStatus.textContent = 'Shared!';
+      shareStatus.textContent = t('share_shared');
       return;
     }
     await navigator.clipboard.writeText(url);
-    shareStatus.textContent = 'Link copied!';
+    shareStatus.textContent = t('share_copied');
   } catch (err) {
     if (err && err.name === 'AbortError') return;
-    shareStatus.textContent = 'Copy this link: ' + url;
+    shareStatus.textContent = `${t('share_copy_prompt')} ${url}`;
   }
   setTimeout(() => (shareStatus.textContent = ''), 4000);
 });
