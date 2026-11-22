@@ -11,12 +11,14 @@ import {
   toggleFavourite,
   danceOfTheDay,
   collectTags,
+  videosByTag,
   formatTag,
   tagHref,
   getRecentlyPlayed,
   FAVOURITES_EVENT,
 } from './data.js';
 import { initI18n, t } from './i18n.js';
+import './theme.js';
 import { initPlaylistUI, playlistButtonMarkup } from './playlist-dialog.js';
 import { enforceKidsMode, setKidsMode } from './kids-mode.js';
 import './install-prompt.js';
@@ -36,6 +38,8 @@ const tagNav = document.getElementById('tagNav');
 const tagList = document.getElementById('tagList');
 const recentRow = document.getElementById('recentRow');
 const recentList = document.getElementById('recentList');
+const tagSections = document.getElementById('tagSections');
+const tagSectionsList = document.getElementById('tagSectionsList');
 const kidsModeBtn = document.getElementById('kidsModeBtn');
 
 /* Views the grid can show: the two sections, plus the saved favourites.
@@ -208,6 +212,7 @@ async function init() {
     renderDanceOfTheDay();
     renderTags();
     renderRecentlyPlayed();
+    renderTagSections();
     setSection(location.hash.replace('#', '') || 'main');
   } catch (err) {
     showError(err.message || 'Unknown error.');
@@ -266,6 +271,47 @@ function renderRecentlyPlayed() {
     )
     .join('');
   recentRow.hidden = false;
+}
+
+/**
+ * Auto-built homepage sections: one horizontal row per tag that has 3+ videos
+ * (matching the tag pages and sitemap). Built entirely from videos.json.
+ */
+function renderTagSections() {
+  if (!tagSections || !tagSectionsList) return;
+  const entries = collectTags(videos)
+    .map(({ tag }) => ({ tag, list: videosByTag(videos, tag) }))
+    .filter((entry) => entry.list.length > 0);
+  if (entries.length === 0) return;
+
+  tagSectionsList.innerHTML = entries
+    .map(
+      ({ tag, list }) => `
+      <section class="tag-section" aria-labelledby="tagSec-${escapeHtml(tag)}">
+        <div class="tag-section__head">
+          <h3 id="tagSec-${escapeHtml(tag)}">${escapeHtml(formatTag(tag))}</h3>
+          <a class="see-all" href="${tagHref(tag)}">${escapeHtml(t('see_all'))}</a>
+        </div>
+        <ul class="tag-section__row">
+          ${list
+            .map(
+              (video) => `
+            <li>
+              <a class="recent__link" href="${watchHref(video.id)}">
+                <span class="recent__thumb">
+                  <img src="${thumbnailUrl(video.id)}" alt="" width="320" height="180"
+                       loading="lazy" decoding="async">
+                </span>
+                <span class="recent__title">${escapeHtml(video.title)}</span>
+              </a>
+            </li>`
+            )
+            .join('')}
+        </ul>
+      </section>`
+    )
+    .join('');
+  tagSections.hidden = false;
 }
 
 /* ---- Events ---- */

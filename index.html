@@ -13,6 +13,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Beatavo">
   <link rel="preconnect" href="https://i.ytimg.com">
+  <script>try{var t=localStorage.getItem('beatavo:theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
   <link rel="stylesheet" href="./assets/css/styles.css">
 
   <!-- Open Graph / social sharing -->
@@ -40,6 +41,7 @@
         <a href="#main" data-i18n="nav_videos">Videos</a>
         <a href="./kids/" data-i18n="nav_kids">Kids</a>
         <a href="./playlists/" data-i18n="nav_playlists">Playlists</a>
+        <a href="./favourites/" data-i18n="nav_favourites">Favourites</a>
         <a href="./privacy/" data-i18n="nav_privacy">Privacy</a>
       </nav>
       <button class="mode-toggle" id="kidsModeBtn" type="button" aria-pressed="false">
@@ -126,6 +128,11 @@
       </div>
 
       <div class="video-grid" id="videoGrid" role="tabpanel" aria-labelledby="tab-main"></div>
+
+      <section class="tag-sections" id="tagSections" aria-labelledby="tagSectionsLabel" hidden>
+        <h2 class="tag-sections__heading" id="tagSectionsLabel" data-i18n="explore_tags">Explore by tag</h2>
+        <div id="tagSectionsList"></div>
+      </section>
     </div>
   </main>
 
