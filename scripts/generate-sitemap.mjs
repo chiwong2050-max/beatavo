@@ -13,9 +13,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
 
 /* Production origin. Override with SITE_URL when deploying elsewhere. */
-const BASE_URL = (
-  process.env.SITE_URL || 'https://webbuilder2050-rgb.github.io/beatavo'
-).replace(/\/+$/, '');
+const BASE_URL = (process.env.SITE_URL || 'https://beatavo.com').replace(/\/+$/, '');
 
 function xmlEscape(str) {
   return String(str).replace(

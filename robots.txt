@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://webbuilder2050-rgb.github.io/beatavo/sitemap.xml
+Sitemap: https://beatavo.com/sitemap.xml
