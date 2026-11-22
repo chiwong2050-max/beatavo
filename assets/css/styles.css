@@ -1304,6 +1304,433 @@ main {
 }
 
 /* --------------------------------------------------------------------------
+   Kids mode toggle (header)
+   -------------------------------------------------------------------------- */
+.mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.mode-toggle:hover {
+  border-color: var(--color-brand);
+}
+
+.mode-toggle[hidden] {
+  display: none;
+}
+
+.mode-toggle__text {
+  display: none;
+  white-space: nowrap;
+}
+
+@media (min-width: 60rem) {
+  .mode-toggle__text {
+    display: inline;
+  }
+}
+
+.kids-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+  padding: var(--space-1) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.kids-lock[hidden] {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Recently played row
+   -------------------------------------------------------------------------- */
+.recent {
+  margin-bottom: var(--space-5);
+}
+
+.recent__label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-2);
+}
+
+.recent__list {
+  list-style: none;
+  display: flex;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0 0 var(--space-2);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.recent__item {
+  flex: 0 0 auto;
+  width: 200px;
+  scroll-snap-align: start;
+}
+
+.recent__link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.recent__thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface-2);
+  box-shadow: var(--shadow-sm);
+}
+
+.recent__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recent__title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Playlist buttons on cards
+   -------------------------------------------------------------------------- */
+.card__pl {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+/* When a heart button is also present, drop the playlist button below it. */
+.card__fav + .card__pl {
+  top: calc(var(--space-2) + 44px + var(--space-2));
+}
+
+.card__pl:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.card__pl:active {
+  transform: scale(0.92);
+}
+
+.card__pl[aria-pressed="true"] {
+  background: #ffffff;
+  color: var(--color-brand);
+}
+
+/* --------------------------------------------------------------------------
+   Modals (add-to-playlist, grown-up gate, shortcut help)
+   -------------------------------------------------------------------------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+}
+
+.modal[hidden] {
+  display: none;
+}
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(14, 11, 26, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.modal__panel {
+  position: relative;
+  width: min(28rem, 100%);
+  max-height: min(88dvh, 40rem);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.modal__head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.modal__x {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal__x:hover {
+  background: var(--color-border);
+}
+
+.modal__sub {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Playlist list inside the dialog */
+.pl-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.pl-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.pl-item:hover {
+  background: var(--color-surface-2);
+}
+
+.pl-item input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  accent-color: var(--color-brand);
+}
+
+.pl-item__name {
+  flex: 1 1 auto;
+  font-weight: 600;
+}
+
+.pl-item__count {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.pl-empty {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  padding: var(--space-2) var(--space-1);
+}
+
+.pl-new {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.pl-new__input,
+.pl-create__input {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+/* Grown-up gate */
+.gate__q {
+  display: block;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.gate__error {
+  color: var(--color-brand-2);
+  font-weight: 600;
+  margin: var(--space-2) 0 0;
+}
+
+/* Keyboard shortcut help */
+.shortcuts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.shortcuts__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.shortcuts__keys {
+  display: inline-flex;
+  gap: var(--space-1);
+}
+
+.shortcuts__keys kbd {
+  min-width: 1.8rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.shortcuts__label {
+  color: var(--color-text-muted);
+}
+
+/* Square ghost icon button (watch page actions) */
+.btn--icon {
+  width: var(--tap);
+  min-width: var(--tap);
+  padding: 0;
+}
+
+.player__slot {
+  display: inline-flex;
+}
+
+/* --------------------------------------------------------------------------
+   Playlists page
+   -------------------------------------------------------------------------- */
+.playlists {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.pl-block__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.pl-block__head h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pl-block__head .count {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.pl-block__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.pl-create {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.pl-create__input {
+  flex: 1 1 12rem;
+  width: auto;
+}
+
+/* --------------------------------------------------------------------------
    Motion preferences
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
