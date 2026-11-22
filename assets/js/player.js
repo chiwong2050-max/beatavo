@@ -49,6 +49,8 @@ let player = null;
 let apiPromise = null;
 let errorStreak = 0;
 let isPlaying = false;
+let sleepTimerId = null;
+let loopVideo = false;
 
 const PLAY_SVG =
   '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 5.14v13.72c0 .8.87 1.3 1.56.9l10.8-6.86a1.06 1.06 0 0 0 0-1.8L9.56 4.24A1.06 1.06 0 0 0 8 5.14Z"/></svg>';
@@ -76,8 +78,11 @@ function setMeta(attr, key, content) {
   el.setAttribute('content', content);
 }
 
+/** Canonical origin for search engines (the production domain). */
+const SITE_ORIGIN = 'https://beatavo.com';
+
 function canonicalUrl(id) {
-  return `${location.origin}${location.pathname}?v=${encodeURIComponent(id)}`;
+  return `${SITE_ORIGIN}/watch/?v=${encodeURIComponent(id)}`;
 }
 
 /** Respect the user's motion preference for programmatic scrolling. */
@@ -235,7 +240,15 @@ async function startPlayback(videoId) {
           isPlaying = false;
         }
         updateMiniPlayIcon();
-        if (e.data === S.ENDED) go(1);
+        if (e.data === S.ENDED) {
+          // "Loop this video" replays the current clip instead of advancing.
+          if (loopVideo) {
+            e.target.seekTo(0);
+            e.target.playVideo();
+          } else {
+            go(1);
+          }
+        }
       },
       onError: () => {
         // Unplayable/private video: skip along, but never spin forever.
@@ -570,6 +583,9 @@ embedBtn?.addEventListener('click', async () => {
 });
 
 helpBtn?.addEventListener('click', openHelp);
+
+sleepSelect?.addEventListener('change', () => applySleepTimer(sleepSelect.value));
+loopBtn?.addEventListener('click', () => setLoop(!loopVideo));
 
 document.addEventListener('keydown', (e) => {
   // While the shortcut help is open, Escape (handled there) is the only key.

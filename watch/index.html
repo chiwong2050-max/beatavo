@@ -6,7 +6,7 @@
   <title>Watch · Beatavo</title>
   <meta name="description" content="Watch and dance along with fun cartoon music videos on Beatavo.">
   <meta name="theme-color" content="#7c4dff">
-  <link rel="canonical" href="../watch/">
+  <link rel="canonical" href="https://beatavo.com/watch/">
   <link rel="manifest" href="../manifest.json">
   <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png">
@@ -80,6 +80,20 @@
             <span data-i18n="btn_embed">Embed</span>
           </button>
           <span class="player__slot" id="watchPlaylist"></span>
+          <label class="sleep">
+            <span class="visually-hidden" data-i18n="sleep_timer">Sleep timer</span>
+            <select class="sleep__select" id="sleepTimer" aria-label="Sleep timer">
+              <option value="0" data-i18n="sleep_off">Off</option>
+              <option value="15" data-i18n="sleep_15">15 min</option>
+              <option value="30" data-i18n="sleep_30">30 min</option>
+              <option value="60" data-i18n="sleep_60">60 min</option>
+            </select>
+          </label>
+          <button class="btn btn--ghost btn--icon" id="loopBtn" type="button" aria-pressed="false"
+                  data-i18n-aria-label="loop_video" data-i18n-title="loop_video"
+                  aria-label="Loop this video" title="Loop this video">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>
+          </button>
           <button class="btn btn--ghost btn--icon" id="shortcutHelpBtn" type="button"
                   data-i18n-aria-label="shortcuts_open" data-i18n-title="shortcuts_open"
                   aria-label="Keyboard shortcuts" title="Keyboard shortcuts">?</button>
