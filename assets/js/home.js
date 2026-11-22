@@ -222,6 +222,13 @@ playAllBtn?.addEventListener('click', () => {
   location.href = `./watch/?v=${encodeURIComponent(first.id)}&autoplay=1`;
 });
 
+shuffleBtn?.addEventListener('click', () => {
+  const list = currentList();
+  if (!list.length) return;
+  const pick = list[Math.floor(Math.random() * list.length)];
+  location.href = `./watch/?v=${encodeURIComponent(pick.id)}&autoplay=1`;
+});
+
 window.addEventListener('hashchange', () => {
   const section = location.hash.replace('#', '');
   if (VIEWS[section] && section !== activeSection) setSection(section);
