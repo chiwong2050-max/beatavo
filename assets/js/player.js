@@ -3,7 +3,7 @@
  * Lightweight YouTube embeds: a thumbnail facade first, the iframe (nocookie)
  * is only created after a click. Continuous play advances through the queue.
  */
-import { SECTIONS, loadVideos, thumbnailUrl, formatDate } from '../assets/js/data.js';
+import { SECTIONS, loadVideos, thumbnailUrl, formatDate } from './data.js';
 
 const params = new URLSearchParams(location.search);
 const requestedId = params.get('v');
@@ -18,7 +18,6 @@ const queueEl = document.getElementById('queue');
 const queueTitleEl = document.getElementById('queueTitle');
 const shareBtn = document.getElementById('shareBtn');
 const shareStatus = document.getElementById('shareStatus');
-const sectionPill = document.getElementById('sectionPill');
 
 let videos = [];
 let queue = [];
