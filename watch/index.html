@@ -29,7 +29,7 @@
   <meta name="twitter:description" content="Watch and dance along with fun cartoon music videos on Beatavo.">
   <meta name="twitter:image" content="../assets/images/og.png">
 </head>
-<body>
+<body class="watch-page">
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
@@ -93,6 +93,25 @@
       </nav>
     </div>
   </footer>
+
+  <div class="miniplayer" id="miniplayer" role="region" aria-label="Mini player" hidden>
+    <span class="miniplayer__info">
+      <span class="miniplayer__label">Now playing</span>
+      <span class="miniplayer__title" id="miniTitle"></span>
+    </span>
+    <div class="miniplayer__controls">
+      <button class="mini-btn" id="miniPrev" type="button" aria-label="Previous video">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M15.5 5.5a1 1 0 0 1 1.5.87v11.26a1 1 0 0 1-1.5.87l-8.5-5.63a1 1 0 0 1 0-1.74l8.5-5.63ZM5 5a1 1 0 0 1 2 0v14a1 1 0 1 1-2 0V5Z"/></svg>
+      </button>
+      <button class="mini-btn mini-btn--primary" id="miniPlay" type="button" aria-label="Play"></button>
+      <button class="mini-btn" id="miniNext" type="button" aria-label="Next video">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M8.5 5.5A1 1 0 0 0 7 6.37v11.26a1 1 0 0 0 1.5.87l8.5-5.63a1 1 0 0 0 0-1.74L8.5 5.5ZM19 5a1 1 0 0 0-2 0v14a1 1 0 1 0 2 0V5Z"/></svg>
+      </button>
+      <button class="mini-btn" id="miniExpand" type="button" aria-label="Expand player">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H4v5M15 4h5v5M15 20h5v-5M9 20H4v-5"/></svg>
+      </button>
+    </div>
+  </div>
 
   <script type="module" src="../assets/js/player.js"></script>
 </body>

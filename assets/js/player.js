@@ -18,6 +18,12 @@ const queueEl = document.getElementById('queue');
 const queueTitleEl = document.getElementById('queueTitle');
 const shareBtn = document.getElementById('shareBtn');
 const shareStatus = document.getElementById('shareStatus');
+const miniplayer = document.getElementById('miniplayer');
+const miniTitle = document.getElementById('miniTitle');
+const miniPlay = document.getElementById('miniPlay');
+const miniPrev = document.getElementById('miniPrev');
+const miniNext = document.getElementById('miniNext');
+const miniExpand = document.getElementById('miniExpand');
 
 let videos = [];
 let queue = [];
@@ -25,9 +31,16 @@ let index = 0;
 let player = null;
 let apiPromise = null;
 let errorStreak = 0;
+let isPlaying = false;
 
 const PLAY_SVG =
   '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 5.14v13.72c0 .8.87 1.3 1.56.9l10.8-6.86a1.06 1.06 0 0 0 0-1.8L9.56 4.24A1.06 1.06 0 0 0 8 5.14Z"/></svg>';
+
+const PLAY_SM =
+  '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M8 5.14v13.72c0 .8.87 1.3 1.56.9l10.8-6.86a1.06 1.06 0 0 0 0-1.8L9.56 4.24A1.06 1.06 0 0 0 8 5.14Z"/></svg>';
+
+const PAUSE_SM =
+  '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M7 5h3.4v14H7zM13.6 5H17v14h-3.4z"/></svg>';
 
 /* ------------------------------------------------------------------ utils */
 function escapeHtml(str) {
@@ -78,6 +91,7 @@ function updateUrl(id) {
 /* -------------------------------------------------------------- rendering */
 function renderInfo(video) {
   titleEl.textContent = video.title;
+  if (miniTitle) miniTitle.textContent = video.title;
   const bits = [];
   if (video.published) bits.push(formatDate(video.published));
   bits.push('Hosted on YouTube');
@@ -147,8 +161,15 @@ async function startPlayback(videoId) {
     events: {
       onReady: (e) => e.target.playVideo(),
       onStateChange: (e) => {
-        if (e.data === window.YT.PlayerState.PLAYING) errorStreak = 0;
-        if (e.data === window.YT.PlayerState.ENDED) go(1);
+        const S = window.YT.PlayerState;
+        if (e.data === S.PLAYING) {
+          errorStreak = 0;
+          isPlaying = true;
+        } else if (e.data === S.PAUSED || e.data === S.ENDED) {
+          isPlaying = false;
+        }
+        updateMiniPlayIcon();
+        if (e.data === S.ENDED) go(1);
       },
       onError: () => {
         // Unplayable/private video: skip along, but never spin forever.
@@ -183,8 +204,54 @@ function playIndex(newIndex) {
   queueEl.querySelector(`[data-index="${index}"]`)?.scrollIntoView({ block: 'nearest' });
 }
 
+/* --------------------------------------------------------- mini sticky bar */
+function updateMiniPlayIcon() {
+  if (!miniPlay) return;
+  miniPlay.innerHTML = isPlaying ? PAUSE_SM : PLAY_SM;
+  miniPlay.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
+}
+
+function setMiniVisible(visible) {
+  if (!miniplayer) return;
+  if (visible) updateMiniPlayIcon();
+  miniplayer.hidden = !visible;
+}
+
+function togglePlay() {
+  const video = queue[index];
+  const S = window.YT && window.YT.PlayerState;
+  if (!player || typeof player.getPlayerState !== 'function') {
+    if (video) startPlayback(video.id);
+    return;
+  }
+  if (player.getPlayerState() === S.PLAYING) player.pauseVideo();
+  else player.playVideo();
+}
+
+function setupMiniplayer() {
+  if (!miniplayer || !stage) return;
+
+  // Show the mini bar only while the full player is scrolled out of view.
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => setMiniVisible(!entries[0].isIntersecting),
+      { threshold: 0 }
+    );
+    io.observe(stage);
+  }
+
+  miniPrev.addEventListener('click', () => go(-1));
+  miniNext.addEventListener('click', () => go(1));
+  miniPlay.addEventListener('click', togglePlay);
+  miniExpand.addEventListener('click', () => {
+    setMiniVisible(false);
+    stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+}
+
 /* ------------------------------------------------------------------- init */
 function showMessage(heading, body) {
+  setMiniVisible(false);
   stage.innerHTML = `
     <div class="state" style="position:absolute; inset:0; border:0; display:grid; place-content:center;">
       <h2>${escapeHtml(heading)}</h2>
@@ -219,6 +286,7 @@ async function init() {
   updateMeta(current);
   renderInfo(current);
   renderQueue();
+  setupMiniplayer();
 
   if (wantsAutoplay) {
     startPlayback(current.id);
