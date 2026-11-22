@@ -1,0 +1,11 @@
+{
+  "name": "beatavo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Beatavo — fast, family-safe cartoon dance videos to watch and play along with.",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "icons": "node scripts/generate-icons.mjs"
+  }
+}

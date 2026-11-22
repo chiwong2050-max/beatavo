@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Watch · Beatavo</title>
+  <meta name="description" content="Watch and dance along with fun cartoon music videos on Beatavo.">
+  <meta name="theme-color" content="#7c4dff">
+  <link rel="canonical" href="../watch/">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Beatavo">
+  <link rel="preconnect" href="https://i.ytimg.com">
+  <link rel="preconnect" href="https://www.youtube.com">
+  <link rel="preconnect" href="https://www.youtube-nocookie.com">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+
+  <!-- Open Graph / social sharing (updated per video by player.js) -->
+  <meta property="og:type" content="video.other">
+  <meta property="og:site_name" content="Beatavo">
+  <meta property="og:title" content="Watch · Beatavo">
+  <meta property="og:description" content="Watch and dance along with fun cartoon music videos on Beatavo.">
+  <meta property="og:url" content="../watch/">
+  <meta property="og:image" content="../assets/images/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Watch · Beatavo">
+  <meta name="twitter:description" content="Watch and dance along with fun cartoon music videos on Beatavo.">
+  <meta name="twitter:image" content="../assets/images/og.png">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="../">
+        <img class="brand__mark" src="../assets/icons/favicon.svg" alt="" width="32" height="32">
+        Beatavo
+      </a>
+      <nav class="header-nav" aria-label="Primary">
+        <a href="../">Videos</a>
+        <a href="../privacy/">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="container player-layout">
+      <div>
+        <div class="player__stage" id="stage"></div>
+
+        <div class="player__controls">
+          <button class="btn btn--ghost" id="prevBtn" type="button">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M15.5 5.5a1 1 0 0 1 1.5.87v11.26a1 1 0 0 1-1.5.87l-8.5-5.63a1 1 0 0 1 0-1.74l8.5-5.63ZM5 5a1 1 0 0 1 2 0v14a1 1 0 1 1-2 0V5Z"/></svg>
+            Previous
+          </button>
+          <button class="btn btn--primary" id="nextBtn" type="button">
+            Next
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8.5 5.5A1 1 0 0 0 7 6.37v11.26a1 1 0 0 0 1.5.87l8.5-5.63a1 1 0 0 0 0-1.74L8.5 5.5ZM19 5a1 1 0 0 0-2 0v14a1 1 0 1 0 2 0V5Z"/></svg>
+          </button>
+        </div>
+
+        <h1 class="player__title" id="videoTitle">Loading…</h1>
+        <p class="player__meta" id="videoMeta"></p>
+
+        <div class="player__share">
+          <button class="btn btn--ghost" id="shareBtn" type="button">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M13 4.5a1 1 0 0 1 1.7-.7l6 6a1 1 0 0 1 0 1.4l-6 6a1 1 0 0 1-1.7-.7V14c-5 .2-8.2 2.1-9.6 5.3a1 1 0 0 1-1.8-.7C2.5 12 6.6 8.2 13 7.6V4.5Z"/></svg>
+            Share
+          </button>
+          <span class="copy-status" id="shareStatus" role="status" aria-live="polite"></span>
+        </div>
+      </div>
+
+      <aside class="upnext" aria-labelledby="queueTitle">
+        <h2 id="queueTitle">Up next</h2>
+        <ol class="queue" id="queue"></ol>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <p class="site-footer__tagline">Videos are hosted on YouTube.</p>
+      <nav class="footer-links" aria-label="Footer">
+        <a class="btn btn--coffee" href="https://buymeacoffee.com/aussieloo?ref=beatavo"
+           target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 4h14a1 1 0 0 1 1 1v2h1.5A2.5 2.5 0 0 1 23 9.5v1A2.5 2.5 0 0 1 20.5 13H19v1a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V4Zm15 5v2h1.5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H19ZM5 21a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z"/></svg>
+          Buy me a coffee
+        </a>
+        <a class="footer-link" href="../privacy/">Privacy</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script type="module" src="../assets/js/player.js"></script>
+</body>
+</html>

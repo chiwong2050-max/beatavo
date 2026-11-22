@@ -1,0 +1,38 @@
+[
+  {
+    "id": "sampleVid001",
+    "title": "[SAMPLE] Robot Boogie — dance along",
+    "section": "main",
+    "published": "2026-01-05"
+  },
+  {
+    "id": "sampleVid002",
+    "title": "[SAMPLE] Neon Disco Cats",
+    "section": "main",
+    "published": "2025-12-18"
+  },
+  {
+    "id": "sampleVid003",
+    "title": "[SAMPLE] Funky Penguin Shuffle",
+    "section": "main",
+    "published": "2025-11-30"
+  },
+  {
+    "id": "sampleVid004",
+    "title": "[SAMPLE KIDS] Baby Shark Wiggle",
+    "section": "kids",
+    "published": "2026-01-09"
+  },
+  {
+    "id": "sampleVid005",
+    "title": "[SAMPLE KIDS] Counting Sheep Hop",
+    "section": "kids",
+    "published": "2025-12-22"
+  },
+  {
+    "id": "sampleVid006",
+    "title": "[SAMPLE KIDS] Happy Dino Stomp",
+    "section": "kids",
+    "published": "2025-12-01"
+  }
+]
