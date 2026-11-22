@@ -25,6 +25,8 @@ const dotdSection = document.getElementById('danceOfTheDay');
 const dotdLink = document.getElementById('dotdLink');
 const dotdThumb = document.getElementById('dotdThumb');
 const dotdTitle = document.getElementById('dotdVideoTitle');
+const tagNav = document.getElementById('tagNav');
+const tagList = document.getElementById('tagList');
 
 /* Views the grid can show: the two sections, plus the saved favourites.
    Values are i18n keys resolved at render time. */
@@ -209,6 +211,24 @@ function renderDanceOfTheDay() {
   dotdThumb.alt = '';
   dotdTitle.textContent = pick.title;
   dotdSection.hidden = false;
+}
+
+/** Render the "Browse by tag" chips (tags with at least 3 videos). */
+function renderTags() {
+  if (!tagNav || !tagList) return;
+  const tags = collectTags(videos);
+  if (tags.length === 0) return;
+  tagList.innerHTML = tags
+    .map(
+      ({ tag, count }) => `
+      <li>
+        <a class="tag-chip" href="${tagHref(tag)}">
+          ${escapeHtml(formatTag(tag))}<span class="tag-chip__count">${count}</span>
+        </a>
+      </li>`
+    )
+    .join('');
+  tagNav.hidden = false;
 }
 
 /* ---- Events ---- */

@@ -37,6 +37,16 @@ export function normaliseVideos(list) {
       title: v.title.trim(),
       section: v.section,
       published: typeof v.published === 'string' ? v.published : '',
+      tags: Array.isArray(v.tags)
+        ? Array.from(
+            new Set(
+              v.tags
+                .filter((x) => typeof x === 'string')
+                .map((x) => x.trim().toLowerCase())
+                .filter(Boolean)
+            )
+          )
+        : [],
     }))
     .sort(byNewestFirst);
 }
@@ -59,6 +69,45 @@ export function thumbnailUrl(id, size = 'hqdefault') {
 /** Link to a video's shareable watch page (used from the site root). */
 export function watchHref(id) {
   return `./watch/?v=${encodeURIComponent(id)}`;
+}
+
+/* --------------------------------------------------------------------------
+   Tags — optional categories on each video (e.g. animals, party).
+   -------------------------------------------------------------------------- */
+
+/** A tag needs at least this many videos before it gets its own page. */
+export const MIN_TAG_VIDEOS = 3;
+
+/** Tags with at least `minVideos` videos, most-used first. */
+export function collectTags(videos, { minVideos = MIN_TAG_VIDEOS } = {}) {
+  const counts = new Map();
+  for (const v of videos || []) {
+    for (const tag of v.tags || []) counts.set(tag, (counts.get(tag) || 0) + 1);
+  }
+  return Array.from(counts, ([tag, count]) => ({ tag, count }))
+    .filter((entry) => entry.count >= minVideos)
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+}
+
+/** Videos carrying a given tag (case-insensitive). */
+export function videosByTag(videos, tag) {
+  const want = String(tag || '').trim().toLowerCase();
+  if (!want) return [];
+  return (videos || []).filter((v) => (v.tags || []).includes(want));
+}
+
+/** Link to a tag page; pass `base` ('../') from nested pages. */
+export function tagHref(tag, base = './') {
+  return `${base}tag/?t=${encodeURIComponent(tag)}`;
+}
+
+/** Turn a tag slug ("kids-favourites") into a display label ("Kids Favourites"). */
+export function formatTag(tag) {
+  return String(tag || '')
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
 }
 
 /** Human-friendly date. */

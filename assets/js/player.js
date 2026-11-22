@@ -3,7 +3,7 @@
  * Lightweight YouTube embeds: a thumbnail facade first, the iframe (nocookie)
  * is only created after a click. Continuous play advances through the queue.
  */
-import { loadVideos, thumbnailUrl, formatDate } from './data.js';
+import { loadVideos, thumbnailUrl, formatDate, formatTag, MIN_TAG_VIDEOS } from './data.js';
 import { initI18n, t } from './i18n.js';
 
 const params = new URLSearchParams(location.search);
@@ -308,10 +308,20 @@ async function init() {
   }
 
   const current = videos.find((v) => v.id === requestedId) || videos[0];
-  queue = videos.filter((v) => v.section === current.section);
+
+  // A ?tag= link (from category pages) keeps "Play all" inside that category.
+  const tag = (params.get('tag') || '').trim().toLowerCase();
+  const tagQueue = tag ? videos.filter((v) => (v.tags || []).includes(tag)) : [];
+  if (tagQueue.length >= MIN_TAG_VIDEOS && tagQueue.some((v) => v.id === current.id)) {
+    queueTag = tag;
+    queue = tagQueue;
+    queueTitleEl.textContent = t('watch_up_next', { section: formatTag(tag) });
+  } else {
+    queue = videos.filter((v) => v.section === current.section);
+    queueTitleEl.textContent = t('watch_up_next', { section: t(`tab_${current.section}`) });
+  }
   index = Math.max(0, queue.findIndex((v) => v.id === current.id));
 
-  queueTitleEl.textContent = t('watch_up_next', { section: t(`tab_${current.section}`) });
   updateUrl(current.id);
   updateMeta(current);
   renderInfo(current);
