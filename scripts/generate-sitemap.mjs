@@ -94,6 +94,7 @@ async function main() {
     });
   }
 
+  entries.push({ loc: `${BASE_URL}/about/`, changefreq: 'yearly', priority: '0.4', lastmod: today });
   entries.push({ loc: `${BASE_URL}/privacy/`, changefreq: 'yearly', priority: '0.3', lastmod: today });
 
   const sitemap =

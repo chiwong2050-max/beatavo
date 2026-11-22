@@ -301,13 +301,14 @@ and add its entry to `LOCALES` in `assets/js/i18n.js`.
   SITE_URL=https://example.com npm run sitemap
   ```
 
-  The sitemap lists the home, kids, challenge and privacy pages, **one URL per
+  The sitemap lists the home, kids, challenge, about and privacy pages, **one URL per
   `/watch/?v=ID` page**, and **one URL per category** (`/tag/?t=<tag>`) for every tag
   with at least 3 videos. Re-run it whenever `data/videos.json` changes. The
   `/playlists/` and `/favourites/` pages are deliberately **`noindex`** (their content is
   per-user), so they are left out of the sitemap.
-- Each watch page injects **schema.org `VideoObject`** JSON-LD (name, description,
-  thumbnail, upload date, embed URL) for rich search results.
+- The home page carries **schema.org `WebSite`** JSON-LD, and each watch page injects
+  **`VideoObject`** JSON-LD (name, description, thumbnail, upload date, embed URL) for
+  rich search results.
 
 
 ---

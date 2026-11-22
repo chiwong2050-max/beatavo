@@ -19,6 +19,8 @@ const APP_SHELL = [
   './embed/index.html',
   './privacy/',
   './privacy/index.html',
+  './about/',
+  './about/index.html',
   './favourites/',
   './favourites/index.html',
   './offline.html',
