@@ -1206,6 +1206,36 @@ main {
 }
 
 /* --------------------------------------------------------------------------
+   Embeddable player (/embed/)
+   -------------------------------------------------------------------------- */
+.embed-page {
+  background: #000;
+}
+
+.embed {
+  flex: 1 1 auto;
+  display: grid;
+  place-content: center;
+  gap: var(--space-2);
+  min-height: 100dvh;
+  background: #000;
+}
+
+.embed .player__stage {
+  width: 100%;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.embed__caption {
+  margin: 0;
+  color: #fff;
+  text-align: center;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+/* --------------------------------------------------------------------------
    Dance challenge
    -------------------------------------------------------------------------- */
 .challenge {

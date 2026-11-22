@@ -18,6 +18,7 @@ const nextBtn = document.getElementById('nextBtn');
 const queueEl = document.getElementById('queue');
 const queueTitleEl = document.getElementById('queueTitle');
 const shareBtn = document.getElementById('shareBtn');
+const embedBtn = document.getElementById('embedBtn');
 const shareStatus = document.getElementById('shareStatus');
 const miniplayer = document.getElementById('miniplayer');
 const miniTitle = document.getElementById('miniTitle');
@@ -344,6 +345,13 @@ queueEl.addEventListener('click', (e) => {
   if (btn) playIndex(Number(btn.dataset.index));
 });
 
+let statusTimer = null;
+function setStatus(text) {
+  shareStatus.textContent = text;
+  if (statusTimer) clearTimeout(statusTimer);
+  statusTimer = setTimeout(() => (shareStatus.textContent = ''), 4000);
+}
+
 shareBtn.addEventListener('click', async () => {
   const video = queue[index];
   if (!video) return;
@@ -351,16 +359,32 @@ shareBtn.addEventListener('click', async () => {
   try {
     if (navigator.share) {
       await navigator.share({ title: `${video.title} · Beatavo`, url });
-      shareStatus.textContent = t('share_shared');
+      setStatus(t('share_shared'));
       return;
     }
     await navigator.clipboard.writeText(url);
-    shareStatus.textContent = t('share_copied');
+    setStatus(t('share_copied'));
   } catch (err) {
     if (err && err.name === 'AbortError') return;
-    shareStatus.textContent = `${t('share_copy_prompt')} ${url}`;
+    setStatus(`${t('share_copy_prompt')} ${url}`);
   }
-  setTimeout(() => (shareStatus.textContent = ''), 4000);
+});
+
+/** Copy an <iframe> snippet that embeds this video from /embed/. */
+embedBtn?.addEventListener('click', async () => {
+  const video = queue[index];
+  if (!video) return;
+  const src = `${location.origin}/embed/?v=${encodeURIComponent(video.id)}`;
+  const snippet =
+    `<iframe src="${src}" width="560" height="315" title="${video.title}" ` +
+    'loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; ' +
+    'encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+  try {
+    await navigator.clipboard.writeText(snippet);
+    setStatus(t('embed_copied'));
+  } catch {
+    setStatus(`${t('embed_copy_prompt')} ${snippet}`);
+  }
 });
 
 document.addEventListener('keydown', (e) => {
