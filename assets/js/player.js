@@ -12,8 +12,10 @@ import {
   MIN_TAG_VIDEOS,
   getPlaylist,
   pushRecentlyPlayed,
+  recordPlay,
 } from './data.js';
 import { initI18n, t } from './i18n.js';
+import './theme.js';
 import { initPlaylistUI, playlistButtonMarkup } from './playlist-dialog.js';
 import { enforceKidsMode } from './kids-mode.js';
 
@@ -33,12 +35,19 @@ const embedBtn = document.getElementById('embedBtn');
 const shareStatus = document.getElementById('shareStatus');
 const playlistSlot = document.getElementById('watchPlaylist');
 const helpBtn = document.getElementById('shortcutHelpBtn');
+const relatedEl = document.getElementById('related');
+const relatedList = document.getElementById('relatedList');
+const sleepSelect = document.getElementById('sleepTimer');
+const loopBtn = document.getElementById('loopBtn');
 const miniplayer = document.getElementById('miniplayer');
 const miniTitle = document.getElementById('miniTitle');
 const miniPlay = document.getElementById('miniPlay');
 const miniPrev = document.getElementById('miniPrev');
 const miniNext = document.getElementById('miniNext');
 const miniExpand = document.getElementById('miniExpand');
+
+/** How many upcoming videos the "Up next" panel shows at once. */
+const QUEUE_PREVIEW = 5;
 
 let videos = [];
 let queue = [];
@@ -51,6 +60,8 @@ let errorStreak = 0;
 let isPlaying = false;
 let sleepTimerId = null;
 let loopVideo = false;
+/** The video id we last counted a play for, so replays don't inflate stats. */
+let countedId = null;
 
 const PLAY_SVG =
   '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 5.14v13.72c0 .8.87 1.3 1.56.9l10.8-6.86a1.06 1.06 0 0 0 0-1.8L9.56 4.24A1.06 1.06 0 0 0 8 5.14Z"/></svg>';
@@ -60,6 +71,14 @@ const PLAY_SM =
 
 const PAUSE_SM =
   '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M7 5h3.4v14H7zM13.6 5H17v14h-3.4z"/></svg>';
+
+/* Queue row controls (arrow buttons keep reordering keyboard-accessible). */
+const MOVE_UP_SVG =
+  '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 7l6 7h-4v4h-4v-4H6z"/></svg>';
+const MOVE_DOWN_SVG =
+  '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 17l-6-7h4V6h4v4h4z"/></svg>';
+const REMOVE_SVG =
+  '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>';
 
 /* ------------------------------------------------------------------ utils */
 function escapeHtml(str) {
@@ -162,22 +181,99 @@ function renderPlaylistButton(video) {
   });
 }
 
+/**
+ * "Up next" panel — shows the next few videos after the current one, each with
+ * arrow buttons to reorder and a button to drop it from the queue.
+ */
 function renderQueue() {
-  queueEl.innerHTML = queue
-    .map((v, i) => {
-      const current = i === index;
+  const upcoming = [];
+  for (let step = 1; step <= QUEUE_PREVIEW && index + step < queue.length; step += 1) {
+    upcoming.push({ pos: index + step, video: queue[index + step] });
+  }
+
+  if (upcoming.length === 0) {
+    queueEl.innerHTML = `<li class="queue__empty">${escapeHtml(t('queue_empty'))}</li>`;
+    return;
+  }
+
+  queueEl.innerHTML = upcoming
+    .map(({ pos, video }, i) => {
+      const canUp = i > 0;
+      const canDown = i < upcoming.length - 1;
       return `
-        <li>
-          <button class="queue__item" type="button" data-index="${i}"
-                  aria-current="${current}" title="${escapeHtml(v.title)}">
+        <li class="queue__row">
+          <button class="queue__item" type="button" data-index="${pos}"
+                  title="${escapeHtml(video.title)}">
             <span class="queue__thumb">
+              <img src="${thumbnailUrl(video.id, 'mqdefault')}" alt="" width="320" height="180"
+                   loading="lazy" decoding="async">
+            </span>
+            <span class="queue__title">${escapeHtml(video.title)}</span>
+          </button>
+          <span class="queue__actions">
+            <button class="queue__btn" type="button" data-move="up" data-index="${pos}"
+                    ${canUp ? '' : 'disabled'} aria-label="${escapeHtml(t('queue_move_up'))}"
+                    title="${escapeHtml(t('queue_move_up'))}">${MOVE_UP_SVG}</button>
+            <button class="queue__btn" type="button" data-move="down" data-index="${pos}"
+                    ${canDown ? '' : 'disabled'} aria-label="${escapeHtml(t('queue_move_down'))}"
+                    title="${escapeHtml(t('queue_move_down'))}">${MOVE_DOWN_SVG}</button>
+            <button class="queue__btn" type="button" data-remove="${pos}"
+                    aria-label="${escapeHtml(t('queue_remove'))}"
+                    title="${escapeHtml(t('queue_remove'))}">${REMOVE_SVG}</button>
+          </span>
+        </li>`;
+    })
+    .join('');
+}
+
+/** Move a queued video one slot up or down (never above the current video). */
+function moveInQueue(pos, dir) {
+  const target = pos + dir;
+  if (target <= index || target >= queue.length) return;
+  [queue[pos], queue[target]] = [queue[target], queue[pos]];
+  renderQueue();
+}
+
+/** Drop a video from the queue (the one playing cannot be removed). */
+function removeFromQueue(pos) {
+  if (pos <= index || pos >= queue.length) return;
+  queue.splice(pos, 1);
+  renderQueue();
+  setStatus(t('queue_removed'));
+}
+
+/** "More like this": videos sharing tags first, then others from the section. */
+function relatedVideos(video, limit = 6) {
+  const others = videos.filter((v) => v.id !== video.id);
+  const shared = (v) =>
+    (v.tags || []).some((tag) => (video.tags || []).includes(tag));
+  const byTags = others.filter(shared);
+  const bySection = others.filter((v) => !shared(v) && v.section === video.section);
+  return [...byTags, ...bySection].slice(0, limit);
+}
+
+function renderRelated(video) {
+  if (!relatedEl || !relatedList) return;
+  const items = relatedVideos(video);
+  if (items.length === 0) {
+    relatedEl.hidden = true;
+    relatedList.innerHTML = '';
+    return;
+  }
+  relatedEl.hidden = false;
+  relatedList.innerHTML = items
+    .map(
+      (v) => `
+        <li class="related__item">
+          <a class="related__link" href="../watch/?v=${encodeURIComponent(v.id)}">
+            <span class="related__thumb">
               <img src="${thumbnailUrl(v.id, 'mqdefault')}" alt="" width="320" height="180"
                    loading="lazy" decoding="async">
             </span>
-            <span class="queue__title">${escapeHtml(v.title)}</span>
-          </button>
-        </li>`;
-    })
+            <span class="related__title">${escapeHtml(v.title)}</span>
+          </a>
+        </li>`
+    )
     .join('');
 }
 
@@ -236,6 +332,12 @@ async function startPlayback(videoId) {
         if (e.data === S.PLAYING) {
           errorStreak = 0;
           isPlaying = true;
+          // Count a play the first time each video actually starts.
+          const id = queue[index]?.id;
+          if (id && id !== countedId) {
+            countedId = id;
+            recordPlay(id);
+          }
         } else if (e.data === S.PAUSED || e.data === S.ENDED) {
           isPlaying = false;
         }
@@ -275,14 +377,13 @@ function playIndex(newIndex) {
   renderInfo(video);
   renderPlaylistButton(video);
   renderQueue();
+  renderRelated(video);
 
   if (player && typeof player.loadVideoById === 'function') {
     player.loadVideoById(video.id);
   } else {
     showFacade(video);
   }
-
-  queueEl.querySelector(`[data-index="${index}"]`)?.scrollIntoView({ block: 'nearest' });
 }
 
 /* --------------------------------------------------------- mini sticky bar */
@@ -328,6 +429,32 @@ function setupMiniplayer() {
     setMiniVisible(false);
     stage.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'center' });
   });
+}
+
+/* --------------------------------------------- sleep timer + loop toggle */
+/** Stop playback after the chosen number of minutes (0 = off). */
+function applySleepTimer(minutes) {
+  const mins = Number(minutes) || 0;
+  if (sleepTimerId) {
+    clearTimeout(sleepTimerId);
+    sleepTimerId = null;
+  }
+  if (mins <= 0) return;
+  sleepTimerId = setTimeout(() => {
+    sleepTimerId = null;
+    if (player && typeof player.pauseVideo === 'function') player.pauseVideo();
+    if (sleepSelect) sleepSelect.value = '0';
+    setStatus(t('sleep_done'));
+  }, mins * 60 * 1000);
+}
+
+/** Toggle replaying the current video instead of advancing when it ends. */
+function setLoop(on) {
+  loopVideo = !!on;
+  if (loopBtn) {
+    loopBtn.setAttribute('aria-pressed', String(loopVideo));
+  }
+  setStatus(loopVideo ? t('loop_on') : t('loop_off'));
 }
 
 /* --------------------------------------------------- keyboard + shortcuts */
@@ -457,6 +584,7 @@ function showMessage(heading, body) {
     </div>`;
   queueEl.innerHTML = '';
   if (playlistSlot) playlistSlot.innerHTML = '';
+  if (relatedEl) relatedEl.hidden = true;
   prevBtn.disabled = true;
   nextBtn.disabled = true;
   shareBtn.disabled = true;
@@ -514,6 +642,7 @@ async function init() {
   renderInfo(current);
   renderPlaylistButton(current);
   renderQueue();
+  renderRelated(current);
   setupMiniplayer();
 
   if (wantsAutoplay) {
@@ -528,6 +657,16 @@ prevBtn.addEventListener('click', () => go(-1));
 nextBtn.addEventListener('click', () => go(1));
 
 queueEl.addEventListener('click', (e) => {
+  const move = e.target.closest('[data-move]');
+  if (move) {
+    moveInQueue(Number(move.dataset.index), move.dataset.move === 'up' ? -1 : 1);
+    return;
+  }
+  const remove = e.target.closest('[data-remove]');
+  if (remove) {
+    removeFromQueue(Number(remove.dataset.remove));
+    return;
+  }
   const btn = e.target.closest('.queue__item');
   if (btn) playIndex(Number(btn.dataset.index));
 });

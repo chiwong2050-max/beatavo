@@ -15,6 +15,7 @@
   <link rel="preconnect" href="https://i.ytimg.com">
   <link rel="preconnect" href="https://www.youtube.com">
   <link rel="preconnect" href="https://www.youtube-nocookie.com">
+  <script>try{var t=localStorage.getItem('beatavo:theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
   <link rel="stylesheet" href="../assets/css/styles.css">
 
   <!-- Open Graph / social sharing (updated per video by player.js) -->
@@ -42,6 +43,7 @@
         <a href="../" data-i18n="nav_videos">Videos</a>
         <a href="../kids/" data-i18n="nav_kids">Kids</a>
         <a href="../playlists/" data-i18n="nav_playlists">Playlists</a>
+        <a href="../favourites/" data-i18n="nav_favourites">Favourites</a>
         <a href="../privacy/" data-i18n="nav_privacy">Privacy</a>
       </nav>
       <label class="lang">
@@ -99,6 +101,11 @@
                   aria-label="Keyboard shortcuts" title="Keyboard shortcuts">?</button>
           <span class="copy-status" id="shareStatus" role="status" aria-live="polite"></span>
         </div>
+
+        <section class="related" id="related" aria-labelledby="relatedTitle" hidden>
+          <h2 class="related__label" id="relatedTitle" data-i18n="more_like_this">More like this</h2>
+          <ul class="related__list" id="relatedList"></ul>
+        </section>
       </div>
 
       <aside class="upnext" aria-labelledby="queueTitle">

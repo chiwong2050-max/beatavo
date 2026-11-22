@@ -292,3 +292,42 @@ export function pushRecentlyPlayed(videoId) {
     /* ignore */
   }
 }
+
+/* --------------------------------------------------------------------------
+   Play counts — a private, on-device tally used for "Your top dances".
+   Nothing here ever leaves the browser; it is only a number in localStorage.
+   -------------------------------------------------------------------------- */
+const PLAYS_KEY = 'beatavo:plays';
+
+/** Map of video id → play count (empty when storage is unavailable). */
+export function getPlayCounts() {
+  try {
+    const raw = localStorage.getItem(PLAYS_KEY);
+    const obj = raw ? JSON.parse(raw) : null;
+    return obj && typeof obj === 'object' && !Array.isArray(obj) ? obj : {};
+  } catch {
+    return {};
+  }
+}
+
+/** Count one play for a video (called when playback actually starts). */
+export function recordPlay(videoId) {
+  if (!videoId) return;
+  const counts = getPlayCounts();
+  counts[videoId] = (Number(counts[videoId]) || 0) + 1;
+  try {
+    localStorage.setItem(PLAYS_KEY, JSON.stringify(counts));
+  } catch {
+    /* private mode / quota — the tally simply won't persist */
+  }
+}
+
+/** The most-played videos, highest first, ignoring anything never played. */
+export function getTopPlayed(videos, limit = 6) {
+  const counts = getPlayCounts();
+  return (videos || [])
+    .map((video) => ({ video, count: Number(counts[video.id]) || 0 }))
+    .filter((entry) => entry.count > 0)
+    .sort((a, b) => b.count - a.count || a.video.title.localeCompare(b.video.title))
+    .slice(0, limit);
+}
