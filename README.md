@@ -16,6 +16,12 @@ Highlights:
 - A **Dance challenge** mode: five random songs back to back with a 3-2-1 countdown.
 - **Share** (Web Share API with a copy-link fallback) and **Embed** (a copyable iframe
   snippet pointing at a minimal `/embed/` player) — no third-party scripts.
+- **Playlists** — build named lists saved in `localStorage` and play a whole list
+  continuously from `/playlists/`.
+- A **"Recently played"** row on the home page (the last 12 videos opened).
+- A **Kids mode lock** that keeps the app on `/kids/`, unlocked by a grown-up maths
+  question.
+- **Keyboard shortcuts** on the watch page (space / N / S / F) with a `?` help popup.
 
 ---
 
@@ -61,14 +67,17 @@ beatavo/
 │  ├─ css/
 │  │  └─ styles.css            # Design tokens + all component styles
 │  ├─ js/
-│  │  ├─ data.js               # Shared data layer (load / normalise / sort / tags / favourites)
+│  │  ├─ data.js               # Shared data layer (videos, tags, favourites, playlists, recently played)
 │  │  ├─ i18n.js               # Tiny translation layer (auto-detect + picker)
 │  │  ├─ home.js               # Home page logic
 │  │  ├─ kids.js               # Kids page logic
 │  │  ├─ tag.js                # Category (tag) page logic
 │  │  ├─ challenge.js          # Dance challenge logic
+│  │  ├─ playlists.js          # Playlists page logic
+│  │  ├─ playlist-dialog.js    # Shared "Add to playlist" dialog + card/watch buttons
+│  │  ├─ kids-mode.js          # Kids mode lock + grown-up maths gate
 │  │  ├─ embed.js              # Embeddable player logic
-│  │  └─ player.js             # Watch page logic (embeds, queue, mini player, share, embed)
+│  │  └─ player.js             # Watch page logic (embeds, queue, mini player, share, shortcuts)
 │  ├─ icons/
 │  │  ├─ favicon.svg           # Scalable favicon / brand mark
 │  │  ├─ icon-192.png          # PWA icon
@@ -139,6 +148,36 @@ Videos are read at runtime from [`data/videos.json`](data/videos.json). Each ent
   available, and otherwise copies the canonical link.
 - **Embed** — the watch page's Embed button copies an `<iframe>` snippet that points
   at the minimal `/embed/?v=ID` player, which is `noindex` and free of site chrome.
+- **Playlists** — every card and the watch page carry an **Add to playlist** button
+  that opens a shared dialog (create, tick/untick, delete). Playlists are saved under
+  `beatavo:playlists` in `localStorage`. `/playlists/` lists them all and **Play all**
+  opens `/watch/?v=ID&playlist=<id>`, so the watch page queues the whole list and plays
+  it continuously (the `playlist` param takes priority over `tag`/section queues).
+- **Recently played** — the watch page records each video opened under
+  `beatavo:recently-played` (deduped, capped at the last **12**), and the home page
+  shows a horizontally-scrolling "Recently played" row when there is history.
+- **Kids mode lock** — the header toggle stores `beatavo:kids-mode`; while it is on,
+  every other page redirects to `/kids/` on load. On the kids page a **Grown-ups: exit**
+  button opens a simple addition question, and only a correct answer clears the lock.
+- **Keyboard shortcuts** (watch page) — `Space` play/pause, `N` next, `S` shuffle the
+  queue, `F` fullscreen, `←`/`→` previous/next, and `?` opens a small help popup. Keys
+  are ignored while typing in a field or when a modifier is held.
+
+---
+
+## Stored data
+
+Everything is client-side; there is no account and no server. These `localStorage`
+keys are the only state:
+
+| Key | Purpose |
+| --- | --- |
+| `beatavo:favourites` | Hearted video ids |
+| `beatavo:playlists` | Named playlists and their video ids |
+| `beatavo:recently-played` | The last 12 videos opened on the watch page |
+| `beatavo:kids-mode` | `1` while the kids lock is on |
+| `beatavo:challenge-streak` | Dance-challenge day streak |
+| `beatavo:lang` | Chosen interface language |
 
 ---
 
@@ -211,7 +250,9 @@ and add its entry to `LOCALES` in `assets/js/i18n.js`.
 
   The sitemap lists the home, kids, challenge and privacy pages, **one URL per
   `/watch/?v=ID` page**, and **one URL per category** (`/tag/?t=<tag>`) for every tag
-  with at least 3 videos. Re-run it whenever `data/videos.json` changes.
+  with at least 3 videos. Re-run it whenever `data/videos.json` changes. The
+  `/playlists/` page is deliberately **`noindex`** (its content is per-user), so it is
+  left out of the sitemap.
 - Each watch page injects **schema.org `VideoObject`** JSON-LD (name, description,
   thumbnail, upload date, embed URL) for rich search results.
 
@@ -241,6 +282,10 @@ npm run icons
 - Light and dark themes via `prefers-color-scheme`.
 - No render-blocking third-party resources: the YouTube iframe is only loaded **after**
   a click (thumbnail "facade" pattern), which keeps the initial page fast.
+- `preconnect` hints to `https://i.ytimg.com` on every page so thumbnail images start
+  their connection early.
+- Dialogs (playlist picker, grown-up gate, shortcut help) use `role="dialog"` +
+  `aria-modal`, trap Tab focus, close on `Escape`, and restore focus on close.
 - Thumbnails use native `loading="lazy"` + `decoding="async"` (the queue and grid);
   the above-the-fold facade image is fetched eagerly with `fetchpriority="high"`.
 - Images carry explicit `width`/`height` to avoid layout shift.
