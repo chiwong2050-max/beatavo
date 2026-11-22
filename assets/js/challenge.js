@@ -6,6 +6,7 @@
  */
 import { loadVideos } from './data.js';
 import { initI18n, t } from './i18n.js';
+import './theme.js';
 import './install-prompt.js';
 
 const CHALLENGE_SIZE = 5;

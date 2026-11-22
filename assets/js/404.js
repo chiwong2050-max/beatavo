@@ -5,6 +5,7 @@
  */
 import { loadVideos } from './data.js';
 import { initI18n } from './i18n.js';
+import './theme.js';
 
 const randomBtn = document.getElementById('randomBtn');
 const DATA_URL = new URL('../../data/videos.json', import.meta.url).href;

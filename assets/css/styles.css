@@ -56,8 +56,11 @@
   color-scheme: light;
 }
 
+/* Dark tokens apply when the system asks for dark and the visitor has not
+   pinned light, or whenever dark has been pinned explicitly with the header
+   toggle (see assets/js/theme.js). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --color-bg: #0e0b1a;
     --color-bg-tint: #14102a;
     --color-surface: #171226;
@@ -77,6 +80,27 @@
 
     color-scheme: dark;
   }
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #0e0b1a;
+  --color-bg-tint: #14102a;
+  --color-surface: #171226;
+  --color-surface-2: #201a36;
+  --color-text: #f5f2ff;
+  --color-text-muted: #b3a9d1;
+  --color-border: #2c2548;
+
+  --color-brand: #9d7bff;
+  --color-brand-strong: #b79bff;
+  --color-brand-2: #ff6bb2;
+  --color-accent: #ffd84d;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 14px 40px rgba(0, 0, 0, 0.55);
+
+  color-scheme: dark;
 }
 
 /* --------------------------------------------------------------------------
@@ -1921,6 +1945,261 @@ body.modal-open {
   gap: var(--space-3);
   justify-content: center;
   margin-top: var(--space-4);
+}
+
+/* --------------------------------------------------------------------------
+   Theme toggle (header)
+   -------------------------------------------------------------------------- */
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--color-brand);
+}
+
+/* --------------------------------------------------------------------------
+   Watch page — "Up next" queue (reorder + remove)
+   -------------------------------------------------------------------------- */
+.queue__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.queue__row .queue__item {
+  grid-template-columns: 80px 1fr;
+  min-height: 0;
+}
+
+.queue__actions {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.queue__btn {
+  display: grid;
+  place-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.queue__btn:hover:not([disabled]) {
+  border-color: var(--color-brand);
+}
+
+.queue__btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.queue__empty {
+  padding: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+/* --------------------------------------------------------------------------
+   Watch page — "More like this" row
+   -------------------------------------------------------------------------- */
+.related {
+  margin-top: var(--space-5);
+}
+
+.related__label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-2);
+}
+
+.related__list {
+  list-style: none;
+  display: flex;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0 0 var(--space-2);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.related__item {
+  flex: 0 0 auto;
+  width: 200px;
+  scroll-snap-align: start;
+}
+
+.related__link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.related__thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface-2);
+  box-shadow: var(--shadow-sm);
+}
+
+.related__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.related__title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Home page — auto sections per tag
+   -------------------------------------------------------------------------- */
+.tag-sections {
+  margin-top: var(--space-7);
+}
+
+.tag-sections__heading {
+  font-size: 1.1rem;
+  margin-bottom: var(--space-4);
+}
+
+.tag-section {
+  margin-bottom: var(--space-6);
+}
+
+.tag-section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.tag-section__head h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.tag-section .see-all {
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tag-section__row {
+  list-style: none;
+  display: flex;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0 0 var(--space-2);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tag-section__row > li {
+  flex: 0 0 auto;
+  width: 220px;
+  scroll-snap-align: start;
+}
+
+/* --------------------------------------------------------------------------
+   Favourites page — saved videos + "Your top dances"
+   -------------------------------------------------------------------------- */
+.top-dances {
+  margin-top: var(--space-7);
+}
+
+.top-dances__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.top-dance {
+  display: grid;
+  grid-template-columns: 2rem 96px 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.top-dance__rank {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--color-brand-strong);
+  text-align: center;
+}
+
+.top-dance__link {
+  display: contents;
+  color: inherit;
+  text-decoration: none;
+}
+
+.top-dance__thumb {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-surface-2);
+}
+
+.top-dance__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.top-dance__title {
+  font-weight: 600;
+}
+
+.top-dance__count {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.top-dances__empty {
+  color: var(--color-text-muted);
 }
 
 /* --------------------------------------------------------------------------

@@ -13,6 +13,7 @@ import {
   PLAYLISTS_EVENT,
 } from './data.js';
 import { initI18n, t } from './i18n.js';
+import './theme.js';
 import { initPlaylistUI } from './playlist-dialog.js';
 import { enforceKidsMode } from './kids-mode.js';
 import './install-prompt.js';

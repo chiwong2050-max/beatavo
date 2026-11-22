@@ -5,6 +5,7 @@
  */
 import { getRecentlyPlayed } from './data.js';
 import { initI18n } from './i18n.js';
+import './theme.js';
 
 const listEl = document.getElementById('offlineList');
 const emptyEl = document.getElementById('offlineEmpty');
