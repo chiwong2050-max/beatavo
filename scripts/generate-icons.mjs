@@ -197,6 +197,33 @@ function downsample(src, W, H, SS) {
   return out;
 }
 
+/* ---------------------------------------------------------------- ICO output */
+/** Wrap PNG images in a classic .ico container (PNG-in-ICO, widely supported). */
+function encodeICO(pngs) {
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(0, 0); // reserved
+  header.writeUInt16LE(1, 2); // type: icon
+  header.writeUInt16LE(pngs.length, 4); // image count
+
+  const entries = Buffer.alloc(16 * pngs.length);
+  let offset = 6 + 16 * pngs.length;
+  const bodies = [];
+
+  pngs.forEach(({ size, png }, i) => {
+    const b = i * 16;
+    entries[b] = size >= 256 ? 0 : size; // width (0 means 256)
+    entries[b + 1] = size >= 256 ? 0 : size; // height
+    entries.writeUInt16LE(1, b + 4); // colour planes
+    entries.writeUInt16LE(32, b + 6); // bits per pixel
+    entries.writeUInt32LE(png.length, b + 8); // size of image data
+    entries.writeUInt32LE(offset, b + 12); // offset of image data
+    offset += png.length;
+    bodies.push(png);
+  });
+
+  return Buffer.concat([header, entries, ...bodies]);
+}
+
 /* -------------------------------------------------------------------- output */
 const targets = [
   {
@@ -227,5 +254,14 @@ for (const { file, opts } of targets) {
   writeFileSync(file, png);
   console.log(`wrote ${file} (${opts.width}x${opts.height}, ${png.length} bytes)`);
 }
+
+/* Classic /favicon.ico fallback (16/32/48px) for older browsers and crawlers. */
+const faviconPngs = [16, 32, 48].map((size) => ({
+  size,
+  png: encodePNG(size, size, render({ width: size, height: size, cornerRatio: 0.22, glyphScale: 0.8 })),
+}));
+const faviconIco = encodeICO(faviconPngs);
+writeFileSync(resolve(root, 'favicon.ico'), faviconIco);
+console.log(`wrote ${resolve(root, 'favicon.ico')} (16/32/48px, ${faviconIco.length} bytes)`);
 
 console.log('Done. Icons generated.');

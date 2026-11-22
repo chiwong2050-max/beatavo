@@ -18,6 +18,10 @@ const BASE_URL = (process.env.SITE_URL || 'https://beatavo.com').replace(/\/+$/,
 /* A tag only gets its own page once it has this many videos (mirrors data.js). */
 const MIN_TAG_VIDEOS = 3;
 
+/* Placeholder / sample entries are never published to search engines. */
+const PLACEHOLDER_ID = /^sample/i;
+const PLACEHOLDER_TITLE = /\[sample/i;
+
 function xmlEscape(str) {
   return String(str).replace(
     /[<>&'"]/g,
@@ -35,7 +39,9 @@ function normalise(list) {
       v.id.trim() !== '' &&
       typeof v.title === 'string' &&
       v.title.trim() !== '' &&
-      (v.section === 'main' || v.section === 'kids')
+      (v.section === 'main' || v.section === 'kids') &&
+      !PLACEHOLDER_ID.test(v.id) &&
+      !PLACEHOLDER_TITLE.test(v.title)
   );
 }
 

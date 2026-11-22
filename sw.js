@@ -51,6 +51,7 @@ const APP_SHELL = [
   './i18n/ar.json',
   './i18n/id.json',
   './manifest.json',
+  './favicon.ico',
   './assets/icons/favicon.svg',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',

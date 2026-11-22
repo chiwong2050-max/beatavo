@@ -19,54 +19,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://beatavo.com/watch/?v=sampleVid001</loc>
-    <lastmod>2026-01-05</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://beatavo.com/watch/?v=sampleVid002</loc>
-    <lastmod>2025-12-18</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://beatavo.com/watch/?v=sampleVid003</loc>
-    <lastmod>2025-11-30</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://beatavo.com/watch/?v=sampleVid004</loc>
-    <lastmod>2026-01-09</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://beatavo.com/watch/?v=sampleVid005</loc>
-    <lastmod>2025-12-22</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://beatavo.com/watch/?v=sampleVid006</loc>
-    <lastmod>2025-12-01</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://beatavo.com/tag/?t=animals</loc>
-    <lastmod>2026-11-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://beatavo.com/tag/?t=kids-favourites</loc>
-    <lastmod>2026-11-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://beatavo.com/tag/?t=party</loc>
-    <lastmod>2026-11-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
     <loc>https://beatavo.com/about/</loc>
     <lastmod>2026-11-22</lastmod>
     <changefreq>yearly</changefreq>
