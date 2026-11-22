@@ -356,16 +356,24 @@ shareBtn.addEventListener('click', async () => {
   const video = queue[index];
   if (!video) return;
   const url = canonicalUrl(video.id);
-  try {
-    if (navigator.share) {
-      await navigator.share({ title: `${video.title} · Beatavo`, url });
+  const title = `${video.title} · Beatavo`;
+
+  // Prefer the native share sheet; fall back to copying the link.
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, url });
       setStatus(t('share_shared'));
       return;
+    } catch (err) {
+      if (err && err.name === 'AbortError') return;
+      /* otherwise fall through to the copy fallback */
     }
+  }
+
+  try {
     await navigator.clipboard.writeText(url);
     setStatus(t('share_copied'));
-  } catch (err) {
-    if (err && err.name === 'AbortError') return;
+  } catch {
     setStatus(`${t('share_copy_prompt')} ${url}`);
   }
 });
