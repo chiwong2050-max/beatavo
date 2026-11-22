@@ -22,6 +22,11 @@ Highlights:
 - A **Kids mode lock** that keeps the app on `/kids/`, unlocked by a grown-up maths
   question.
 - **Keyboard shortcuts** on the watch page (space / N / S / F) with a `?` help popup.
+- **Offline support** — the service worker caches the app shell and the pages you have
+  viewed, and a friendly [`offline.html`](offline.html) lists what you played recently.
+- A dismissible **"Add to home screen"** banner (remembered in `localStorage`).
+- A **sleep timer** (15/30/60 min) and a **Loop this video** toggle on the watch page.
+- A friendly **404 page** with a **Play something random** button.
 
 ---
 
@@ -76,6 +81,9 @@ beatavo/
 │  │  ├─ playlists.js          # Playlists page logic
 │  │  ├─ playlist-dialog.js    # Shared "Add to playlist" dialog + card/watch buttons
 │  │  ├─ kids-mode.js          # Kids mode lock + grown-up maths gate
+│  │  ├─ install-prompt.js     # Dismissible "Add to home screen" banner
+│  │  ├─ offline.js            # Offline page logic (recently played titles)
+│  │  ├─ 404.js                # 404 page logic (play something random)
 │  │  ├─ embed.js              # Embeddable player logic
 │  │  └─ player.js             # Watch page logic (embeds, queue, mini player, share, shortcuts)
 │  ├─ icons/
@@ -176,6 +184,7 @@ keys are the only state:
 | `beatavo:playlists` | Named playlists and their video ids |
 | `beatavo:recently-played` | The last 12 videos opened on the watch page |
 | `beatavo:kids-mode` | `1` while the kids lock is on |
+| `beatavo:install-dismissed` | `1` once the install banner is dismissed |
 | `beatavo:challenge-streak` | Dance-challenge day streak |
 | `beatavo:lang` | Chosen interface language |
 
@@ -217,6 +226,14 @@ Then open <http://localhost:4173/>. Try:
 - **Next / Previous** (and the ← / → arrow keys) for continuous play — when a video
   ends the next one starts automatically. Scroll away and a **mini player** sticks to
   the bottom with play/pause, next/previous and an expand button.
+- The watch page's **sleep timer** (pauses playback after 15/30/60 minutes) and the
+  **Loop this video** toggle.
+- **Offline mode** — after visiting a few pages, stop the server (or go offline) and
+  reload: the service worker serves the shell and shows [`offline.html`](offline.html)
+  with your recently played titles. (In the browser's DevTools you can also tick
+  **Offline** under Network → it simulates the same thing.)
+- Any unknown URL, e.g. <http://localhost:4173/nope>, for the **404 page** and its
+  **Play something random** button.
 - The **language picker** in the header.
 
 ---
@@ -300,5 +317,7 @@ Because it is a static site, deploy the repository root as-is:
 - **Netlify / Vercel** — publish directory `.`, no build command.
 
 The site uses relative paths, so it works both at a domain root and in a sub-path.
-Set your real domain in the canonical/`og:url` values if you use a custom domain, and
-regenerate the sitemap with `SITE_URL=https://your-domain npm run sitemap`.
+(The two exceptions are [`404.html`](404.html) and [`offline.html`](offline.html), which
+are served at arbitrary URLs and therefore use root-relative `/…` paths — host them at
+the domain root.) Set your real domain in the canonical/`og:url` values if you use a
+custom domain, and regenerate the sitemap with `SITE_URL=https://your-domain npm run sitemap`.
