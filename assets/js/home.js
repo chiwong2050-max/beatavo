@@ -19,6 +19,7 @@ import {
 import { initI18n, t } from './i18n.js';
 import { initPlaylistUI, playlistButtonMarkup } from './playlist-dialog.js';
 import { enforceKidsMode, setKidsMode } from './kids-mode.js';
+import './install-prompt.js';
 
 const grid = document.getElementById('videoGrid');
 const sectionHeadTitle = document.getElementById('sectionTitle');

@@ -15,6 +15,7 @@ import {
 import { initI18n, t } from './i18n.js';
 import { initPlaylistUI } from './playlist-dialog.js';
 import { enforceKidsMode } from './kids-mode.js';
+import './install-prompt.js';
 
 const wrap = document.getElementById('playlistsWrap');
 const createForm = document.getElementById('plCreate');

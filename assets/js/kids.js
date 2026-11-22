@@ -8,6 +8,7 @@ import { loadVideos, thumbnailUrl } from './data.js';
 import { initI18n, t } from './i18n.js';
 import { initPlaylistUI, playlistButtonMarkup } from './playlist-dialog.js';
 import { isKidsMode, setKidsMode, openGrownUpGate } from './kids-mode.js';
+import './install-prompt.js';
 
 const grid = document.getElementById('kidsGrid');
 const countEl = document.getElementById('kidsCount');
