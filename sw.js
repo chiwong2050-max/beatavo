@@ -1,7 +1,7 @@
 /* Beatavo service worker — caches the app shell only.
    Videos live on YouTube and are never cached or intercepted. */
 
-const VERSION = 'v10';
+const VERSION = 'v11';
 const SHELL_CACHE = `beatavo-shell-${VERSION}`;
 
 const APP_SHELL = [
@@ -19,6 +19,10 @@ const APP_SHELL = [
   './embed/index.html',
   './privacy/',
   './privacy/index.html',
+  './favourites/',
+  './favourites/index.html',
+  './offline.html',
+  './404.html',
   './assets/css/styles.css',
   './assets/js/data.js',
   './assets/js/home.js',
@@ -31,6 +35,11 @@ const APP_SHELL = [
   './assets/js/kids-mode.js',
   './assets/js/embed.js',
   './assets/js/i18n.js',
+  './assets/js/theme.js',
+  './assets/js/favourites.js',
+  './assets/js/offline.js',
+  './assets/js/404.js',
+  './assets/js/install-prompt.js',
   './i18n/en.json',
   './i18n/es.json',
   './i18n/pt.json',
