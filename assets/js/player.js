@@ -148,7 +148,8 @@ function showFacade(video) {
   stage.innerHTML = `
     <button class="player__facade" id="facade" type="button"
             aria-label="${escapeHtml(`${t('action_play')} ${video.title}`)}">
-      <img src="${thumbnailUrl(video.id)}" alt="" width="480" height="360">
+      <img src="${thumbnailUrl(video.id)}" alt="" width="480" height="360"
+           fetchpriority="high" decoding="async">
       <span class="player__facade-play"><span>${PLAY_SVG} ${escapeHtml(t('facade_play'))}</span></span>
     </button>`;
   document.getElementById('facade').addEventListener('click', () => startPlayback(video.id));

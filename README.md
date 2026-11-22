@@ -31,20 +31,27 @@ No API keys, secrets or trackers are used anywhere in the code.
 
 ```
 beatavo/
-├─ index.html                  # Home: "Play all", Main/Kids tabs, video grid
+├─ index.html                  # Home: "Play all" + "Shuffle play", tabs, search, grid
 ├─ watch/
 │  └─ index.html               # Player page — shareable URL /watch/?v=VIDEO_ID
+├─ kids/
+│  └─ index.html               # Kids-only page with extra-large controls
 ├─ privacy/
 │  └─ index.html               # Family-safe privacy page
+├─ i18n/
+│  ├─ en.json  es.json  pt.json  fr.json
+│  └─ zh-Hans.json  hi.json  ar.json  id.json   # UI strings (video titles stay as-is)
 ├─ data/
 │  └─ videos.json              # Video catalogue (SAMPLE DATA — see below)
 ├─ assets/
 │  ├─ css/
 │  │  └─ styles.css            # Design tokens + all component styles
 │  ├─ js/
-│  │  ├─ data.js               # Shared data layer (load / normalise / sort)
+│  │  ├─ data.js               # Shared data layer (load / normalise / sort / favourites)
+│  │  ├─ i18n.js               # Tiny translation layer (auto-detect + picker)
 │  │  ├─ home.js               # Home page logic
-│  │  └─ player.js             # Watch page logic (embeds, queue, sharing)
+│  │  ├─ kids.js               # Kids page logic
+│  │  └─ player.js             # Watch page logic (embeds, queue, mini player, sharing)
 │  ├─ icons/
 │  │  ├─ favicon.svg           # Scalable favicon / brand mark
 │  │  ├─ icon-192.png          # PWA icon
@@ -55,7 +62,10 @@ beatavo/
 │     └─ og.png                # Social share (Open Graph) image
 ├─ scripts/
 │  ├─ generate-icons.mjs       # Regenerates every icon above (no dependencies)
+│  ├─ generate-sitemap.mjs     # Writes sitemap.xml + robots.txt from data/videos.json
 │  └─ serve.mjs                # Tiny dependency-free static preview server
+├─ sitemap.xml                 # Generated — one URL per page and per watch page
+├─ robots.txt                  # Generated — allows crawling, points at the sitemap
 ├─ manifest.json               # PWA manifest (name: Beatavo, theme #7c4dff)
 ├─ sw.js                       # Service worker — caches the app shell only
 ├─ package.json                # Scripts only (no runtime dependencies)
@@ -112,11 +122,52 @@ python -m http.server 4173     # Python 3
 
 Then open <http://localhost:4173/>. Try:
 
-- The **Play all** button and the **Beatavo / Beatavo Kids** tabs on the home page.
+- The **Play all** and **Shuffle play** buttons, the **Beatavo / Beatavo Kids / Favourites**
+  tabs, and the **search** box (filters by title).
+- Tapping the **heart** on any card saves it to **Favourites** (stored in `localStorage`,
+  no account needed).
+- `/kids/` for a stripped-back kids-only page with extra-large buttons.
 - Opening a video to land on `/watch/?v=VIDEO_ID` — the title, description and Open
   Graph tags update per video, so the link is shareable.
 - **Next / Previous** (and the ← / → arrow keys) for continuous play — when a video
-  ends the next one starts automatically.
+  ends the next one starts automatically. Scroll away and a **mini player** sticks to
+  the bottom with play/pause, next/previous and an expand button.
+- The **language picker** in the header.
+
+---
+
+## Multi-language UI
+
+UI strings live in [`i18n/`](i18n) as one JSON file per locale:
+
+`en`, `es`, `pt`, `fr`, `zh-Hans` (Chinese, Simplified), `hi`, `ar` (right-to-left) and `id`.
+
+- [`assets/js/i18n.js`](assets/js/i18n.js) auto-detects the browser language (matching
+  BCP-47 tags such as `pt-BR` → `pt`) and falls back to English for any missing key.
+- A saved choice wins and is stored under `beatavo:lang`; the header picker switches
+  locales and reloads.
+- Arabic sets `dir="rtl"` on the document.
+- **Video titles stay exactly as authored** — only the interface is translated.
+
+To add a language, drop a new `<code>.json` in `i18n/` (copy `en.json` and translate)
+and add its entry to `LOCALES` in `assets/js/i18n.js`.
+
+---
+
+## Search engine bits
+
+- `sitemap.xml` and `robots.txt` are generated from the catalogue:
+
+  ```bash
+  npm run sitemap                        # uses the default production origin
+  SITE_URL=https://example.com npm run sitemap
+  ```
+
+  The sitemap lists the home, kids and privacy pages plus **one URL per
+  `/watch/?v=ID` page**. Re-run it whenever `data/videos.json` changes.
+- Each watch page injects **schema.org `VideoObject`** JSON-LD (name, description,
+  thumbnail, upload date, embed URL) for rich search results.
+
 
 ---
 
@@ -124,9 +175,9 @@ Then open <http://localhost:4173/>. Try:
 
 - [`manifest.json`](manifest.json) declares the app name **Beatavo**, a bright violet
   theme colour (`#7c4dff`) and the generated icons.
-- [`sw.js`](sw.js) pre-caches the **app shell** (HTML, CSS, JS, icons, manifest) so the
-  app opens instantly and works offline for browsing. **Videos are not cached** —
-  all YouTube/`ytimg.com` requests are left untouched.
+- [`sw.js`](sw.js) pre-caches the **app shell** (HTML, CSS, JS, the i18n files, icons,
+  manifest) so the app opens instantly and works offline for browsing. **Videos are not
+  cached** — all YouTube/`ytimg.com` requests are left untouched.
 
 Regenerate the icons after changing the generator:
 
@@ -143,6 +194,9 @@ npm run icons
 - Light and dark themes via `prefers-color-scheme`.
 - No render-blocking third-party resources: the YouTube iframe is only loaded **after**
   a click (thumbnail "facade" pattern), which keeps the initial page fast.
+- Thumbnails use native `loading="lazy"` + `decoding="async"` (the queue and grid);
+  the above-the-fold facade image is fetched eagerly with `fetchpriority="high"`.
+- Images carry explicit `width`/`height` to avoid layout shift.
 
 ---
 
@@ -154,4 +208,5 @@ Because it is a static site, deploy the repository root as-is:
 - **Netlify / Vercel** — publish directory `.`, no build command.
 
 The site uses relative paths, so it works both at a domain root and in a sub-path.
-Set your real domain in the canonical/`og:url` values if you use a custom domain.
+Set your real domain in the canonical/`og:url` values if you use a custom domain, and
+regenerate the sitemap with `SITE_URL=https://your-domain npm run sitemap`.
