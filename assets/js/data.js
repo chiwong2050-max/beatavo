@@ -71,3 +71,42 @@ export function formatDate(iso) {
     day: 'numeric',
   });
 }
+
+/* --------------------------------------------------------------------------
+   Favourites — stored locally in the browser (no accounts, no server).
+   -------------------------------------------------------------------------- */
+const FAV_KEY = 'beatavo:favourites';
+
+/** Fired on window whenever the favourites list changes. */
+export const FAVOURITES_EVENT = 'beatavo:favourites-changed';
+
+/** Read the saved favourite ids (safe if storage is unavailable). */
+export function getFavourites() {
+  try {
+    const raw = localStorage.getItem(FAV_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list.filter((x) => typeof x === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+export function isFavourite(id) {
+  return getFavourites().includes(id);
+}
+
+/** Add or remove an id. Returns the new favourite state for that id. */
+export function toggleFavourite(id) {
+  const set = new Set(getFavourites());
+  const added = !set.has(id);
+  if (added) set.add(id);
+  else set.delete(id);
+  const list = Array.from(set);
+  try {
+    localStorage.setItem(FAV_KEY, JSON.stringify(list));
+  } catch {
+    /* private mode / quota — favourites simply won't persist */
+  }
+  window.dispatchEvent(new CustomEvent(FAVOURITES_EVENT, { detail: { id, list } }));
+  return added;
+}
