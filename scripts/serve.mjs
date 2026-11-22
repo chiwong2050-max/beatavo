@@ -48,6 +48,20 @@ const server = createServer(async (req, res) => {
     }
 
     if (!info) {
+      // Serve the friendly 404 page for browser navigations (GitHub Pages does
+      // the same), and a plain 404 for everything else.
+      const wantsHtml = (req.headers.accept || '').includes('text/html');
+      const notFound = join(root, '404.html');
+      const notFoundInfo = wantsHtml ? await stat(notFound).catch(() => null) : null;
+      if (notFoundInfo) {
+        const body = await readFile(notFound);
+        res.writeHead(404, {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'no-store',
+        });
+        res.end(body);
+        return;
+      }
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       res.end('404 Not Found');
       return;
