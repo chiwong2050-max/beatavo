@@ -10,6 +10,9 @@ import {
   getFavourites,
   toggleFavourite,
   danceOfTheDay,
+  collectTags,
+  formatTag,
+  tagHref,
   FAVOURITES_EVENT,
 } from './data.js';
 import { initI18n, t } from './i18n.js';
@@ -195,6 +198,7 @@ async function init() {
     videos = await loadVideos('./data/videos.json');
     grid.removeAttribute('aria-busy');
     renderDanceOfTheDay();
+    renderTags();
     setSection(location.hash.replace('#', '') || 'main');
   } catch (err) {
     showError(err.message || 'Unknown error.');

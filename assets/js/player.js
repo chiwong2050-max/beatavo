@@ -29,6 +29,7 @@ const miniExpand = document.getElementById('miniExpand');
 
 let videos = [];
 let queue = [];
+let queueTag = '';
 let index = 0;
 let player = null;
 let apiPromise = null;
@@ -118,7 +119,9 @@ function updateJsonLd(video, description) {
 }
 
 function updateUrl(id) {
-  history.replaceState(null, '', `?v=${encodeURIComponent(id)}`);
+  const query = new URLSearchParams({ v: id });
+  if (queueTag) query.set('tag', queueTag);
+  history.replaceState(null, '', `?${query}`);
 }
 
 /* -------------------------------------------------------------- rendering */
