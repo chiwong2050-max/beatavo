@@ -6,11 +6,15 @@
  */
 import { loadVideos, thumbnailUrl } from './data.js';
 import { initI18n, t } from './i18n.js';
+import { initPlaylistUI, playlistButtonMarkup } from './playlist-dialog.js';
+import { isKidsMode, setKidsMode, openGrownUpGate } from './kids-mode.js';
 
 const grid = document.getElementById('kidsGrid');
 const countEl = document.getElementById('kidsCount');
 const playAllBtn = document.getElementById('kidsPlayAll');
 const shuffleBtn = document.getElementById('kidsShuffle');
+const kidsModeBtn = document.getElementById('kidsModeBtn');
+const kidsLock = document.getElementById('kidsLock');
 
 let videos = [];
 
@@ -34,6 +38,7 @@ function cardMarkup(video) {
         </span>
         <span class="card__title">${escapeHtml(video.title)}</span>
       </a>
+      ${playlistButtonMarkup(video)}
     </article>`;
 }
 
@@ -67,8 +72,16 @@ function showError(message) {
   shuffleBtn.disabled = true;
 }
 
+/** Show the lock badge + grown-up exit button only while kids mode is on. */
+function refreshModeUi() {
+  const on = isKidsMode();
+  if (kidsLock) kidsLock.hidden = !on;
+  if (kidsModeBtn) kidsModeBtn.hidden = !on;
+}
+
 async function init() {
   await initI18n();
+  refreshModeUi();
   try {
     const all = await loadVideos('../data/videos.json');
     videos = all.filter((v) => v.section === 'kids');
@@ -98,4 +111,15 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+/* ---- Kids mode exit (grown-ups only) ---- */
+kidsModeBtn?.addEventListener('click', () => {
+  openGrownUpGate({
+    onUnlock: () => {
+      setKidsMode(false);
+      location.href = '../';
+    },
+  });
+});
+
+initPlaylistUI();
 init();

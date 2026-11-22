@@ -41,6 +41,7 @@
       <nav class="header-nav" aria-label="Primary">
         <a href="../" data-i18n="nav_videos">Videos</a>
         <a href="../kids/" data-i18n="nav_kids">Kids</a>
+        <a href="../playlists/" data-i18n="nav_playlists">Playlists</a>
         <a href="../privacy/" data-i18n="nav_privacy">Privacy</a>
       </nav>
       <label class="lang">
@@ -78,6 +79,10 @@
             <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 8 5 12l4 4M15 8l4 4-4 4"/></svg>
             <span data-i18n="btn_embed">Embed</span>
           </button>
+          <span class="player__slot" id="watchPlaylist"></span>
+          <button class="btn btn--ghost btn--icon" id="shortcutHelpBtn" type="button"
+                  data-i18n-aria-label="shortcuts_open" data-i18n-title="shortcuts_open"
+                  aria-label="Keyboard shortcuts" title="Keyboard shortcuts">?</button>
           <span class="copy-status" id="shareStatus" role="status" aria-live="polite"></span>
         </div>
       </div>

@@ -1,10 +1,21 @@
 /**
  * Beatavo — watch page.
  * Lightweight YouTube embeds: a thumbnail facade first, the iframe (nocookie)
- * is only created after a click. Continuous play advances through the queue.
+ * is only created after a click. Continuous play advances through the queue,
+ * which can come from a section, a category (?tag=) or a playlist (?playlist=).
  */
-import { loadVideos, thumbnailUrl, formatDate, formatTag, MIN_TAG_VIDEOS } from './data.js';
+import {
+  loadVideos,
+  thumbnailUrl,
+  formatDate,
+  formatTag,
+  MIN_TAG_VIDEOS,
+  getPlaylist,
+  pushRecentlyPlayed,
+} from './data.js';
 import { initI18n, t } from './i18n.js';
+import { initPlaylistUI, playlistButtonMarkup } from './playlist-dialog.js';
+import { enforceKidsMode } from './kids-mode.js';
 
 const params = new URLSearchParams(location.search);
 const requestedId = params.get('v');
@@ -20,6 +31,8 @@ const queueTitleEl = document.getElementById('queueTitle');
 const shareBtn = document.getElementById('shareBtn');
 const embedBtn = document.getElementById('embedBtn');
 const shareStatus = document.getElementById('shareStatus');
+const playlistSlot = document.getElementById('watchPlaylist');
+const helpBtn = document.getElementById('shortcutHelpBtn');
 const miniplayer = document.getElementById('miniplayer');
 const miniTitle = document.getElementById('miniTitle');
 const miniPlay = document.getElementById('miniPlay');
@@ -30,6 +43,7 @@ const miniExpand = document.getElementById('miniExpand');
 let videos = [];
 let queue = [];
 let queueTag = '';
+let queuePlaylist = '';
 let index = 0;
 let player = null;
 let apiPromise = null;
@@ -121,6 +135,7 @@ function updateJsonLd(video, description) {
 function updateUrl(id) {
   const query = new URLSearchParams({ v: id });
   if (queueTag) query.set('tag', queueTag);
+  if (queuePlaylist) query.set('playlist', queuePlaylist);
   history.replaceState(null, '', `?${query}`);
 }
 
@@ -132,6 +147,14 @@ function renderInfo(video) {
   if (video.published) bits.push(formatDate(video.published));
   bits.push(t('meta_hosted'));
   metaEl.textContent = bits.join(' · ');
+}
+
+/** Swap the "Add to playlist" button for the current video. */
+function renderPlaylistButton(video) {
+  if (!playlistSlot) return;
+  playlistSlot.innerHTML = playlistButtonMarkup(video, {
+    className: 'btn btn--ghost btn--icon',
+  });
 }
 
 function renderQueue() {
@@ -182,7 +205,13 @@ function ensureApi() {
   return apiPromise;
 }
 
+/** Remember a video as recently played (deduped, capped in data.js). */
+function markPlayed(video) {
+  if (video) pushRecentlyPlayed(video.id);
+}
+
 async function startPlayback(videoId) {
+  markPlayed(queue.find((v) => v.id === videoId));
   stage.innerHTML = '<div id="ytPlayer"></div>';
   await ensureApi();
   player = new window.YT.Player('ytPlayer', {
@@ -227,9 +256,11 @@ function playIndex(newIndex) {
   index = ((newIndex % queue.length) + queue.length) % queue.length;
   const video = queue[index];
 
+  markPlayed(video);
   updateUrl(video.id);
   updateMeta(video);
   renderInfo(video);
+  renderPlaylistButton(video);
   renderQueue();
 
   if (player && typeof player.loadVideoById === 'function') {
@@ -286,6 +317,122 @@ function setupMiniplayer() {
   });
 }
 
+/* --------------------------------------------------- keyboard + shortcuts */
+/** Keep the current video playing but randomise everything after it. */
+function shuffleQueue() {
+  if (queue.length < 2) return;
+  const currentVideo = queue[index];
+  const rest = queue.filter((v) => v !== currentVideo);
+  for (let i = rest.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rest[i], rest[j]] = [rest[j], rest[i]];
+  }
+  queue = [currentVideo, ...rest];
+  index = 0;
+  renderQueue();
+  setStatus(t('shortcut_shuffled'));
+}
+
+function toggleFullscreen() {
+  const el = stage;
+  const active = document.fullscreenElement || document.webkitFullscreenElement;
+  if (!active) {
+    (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el);
+  } else {
+    (document.exitFullscreen || document.webkitExitFullscreen)?.call(document);
+  }
+}
+
+const SHORTCUT_ROWS = [
+  { keys: ['Space'], label: 'shortcut_play_pause' },
+  { keys: ['N'], label: 'shortcut_next' },
+  { keys: ['S'], label: 'shortcut_shuffle' },
+  { keys: ['F'], label: 'shortcut_fullscreen' },
+  { keys: ['←', '→'], label: 'shortcut_prev_next' },
+  { keys: ['?'], label: 'shortcut_help' },
+];
+
+let helpModal = null;
+let helpLastFocus = null;
+
+function ensureHelp() {
+  if (helpModal) return helpModal;
+  helpModal = document.createElement('div');
+  helpModal.className = 'modal';
+  helpModal.id = 'shortcutHelp';
+  helpModal.hidden = true;
+  document.body.appendChild(helpModal);
+
+  helpModal.addEventListener('click', (e) => {
+    if (e.target.closest('[data-help-close]')) closeHelp();
+  });
+  helpModal.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeHelp();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const focusables = helpModal.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])');
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+  return helpModal;
+}
+
+function renderHelpContent() {
+  const rows = SHORTCUT_ROWS.map(
+    ({ keys, label }) => `
+      <li class="shortcuts__row">
+        <span class="shortcuts__keys">${keys
+          .map((k) => `<kbd>${escapeHtml(k)}</kbd>`)
+          .join('')}</span>
+        <span class="shortcuts__label">${escapeHtml(t(label))}</span>
+      </li>`
+  ).join('');
+  helpModal.innerHTML = `
+    <div class="modal__backdrop" data-help-close></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <div class="modal__head">
+        <h2 id="helpTitle">${escapeHtml(t('shortcuts_title'))}</h2>
+        <button class="modal__x" type="button" data-help-close
+                aria-label="${escapeHtml(t('close'))}">&times;</button>
+      </div>
+      <ul class="shortcuts">${rows}</ul>
+      <div class="modal__actions">
+        <button class="btn btn--ghost" type="button" data-help-close>${escapeHtml(t('done'))}</button>
+      </div>
+    </div>`;
+}
+
+function openHelp() {
+  ensureHelp();
+  helpLastFocus = document.activeElement;
+  renderHelpContent();
+  helpModal.hidden = false;
+  document.body.classList.add('modal-open');
+  helpModal.querySelector('[data-help-close]')?.focus();
+}
+
+function closeHelp() {
+  if (!helpModal || helpModal.hidden) return;
+  helpModal.hidden = true;
+  document.body.classList.remove('modal-open');
+  helpLastFocus?.focus?.();
+}
+
+function isHelpOpen() {
+  return !!helpModal && !helpModal.hidden;
+}
+
 /* ------------------------------------------------------------------- init */
 function showMessage(heading, body) {
   setMiniVisible(false);
@@ -296,6 +443,7 @@ function showMessage(heading, body) {
       <p><a class="btn btn--primary" href="../">${escapeHtml(t('back_home'))}</a></p>
     </div>`;
   queueEl.innerHTML = '';
+  if (playlistSlot) playlistSlot.innerHTML = '';
   prevBtn.disabled = true;
   nextBtn.disabled = true;
   shareBtn.disabled = true;
@@ -319,10 +467,25 @@ async function init() {
 
   const current = videos.find((v) => v.id === requestedId) || videos[0];
 
+  // A ?playlist= link (from the playlists page) plays a whole list in order.
+  const playlistParam = (params.get('playlist') || '').trim();
+  const playlist = playlistParam ? getPlaylist(playlistParam) : null;
+  const playlistQueue = playlist
+    ? playlist.ids.map((id) => videos.find((v) => v.id === id)).filter(Boolean)
+    : [];
+
   // A ?tag= link (from category pages) keeps "Play all" inside that category.
   const tag = (params.get('tag') || '').trim().toLowerCase();
   const tagQueue = tag ? videos.filter((v) => (v.tags || []).includes(tag)) : [];
-  if (tagQueue.length >= MIN_TAG_VIDEOS && tagQueue.some((v) => v.id === current.id)) {
+
+  if (playlistQueue.length >= 2 && playlistQueue.some((v) => v.id === current.id)) {
+    queuePlaylist = playlist.id;
+    queue = playlistQueue;
+    queueTitleEl.textContent = t('watch_up_next', { section: playlist.name });
+  } else if (
+    tagQueue.length >= MIN_TAG_VIDEOS &&
+    tagQueue.some((v) => v.id === current.id)
+  ) {
     queueTag = tag;
     queue = tagQueue;
     queueTitleEl.textContent = t('watch_up_next', { section: formatTag(tag) });
@@ -332,9 +495,11 @@ async function init() {
   }
   index = Math.max(0, queue.findIndex((v) => v.id === current.id));
 
+  markPlayed(current);
   updateUrl(current.id);
   updateMeta(current);
   renderInfo(current);
+  renderPlaylistButton(current);
   renderQueue();
   setupMiniplayer();
 
@@ -404,14 +569,52 @@ embedBtn?.addEventListener('click', async () => {
   }
 });
 
+helpBtn?.addEventListener('click', openHelp);
+
 document.addEventListener('keydown', (e) => {
-  // Don't hijack the arrow keys while typing or during a modifier shortcut.
+  // While the shortcut help is open, Escape (handled there) is the only key.
+  if (isHelpOpen()) return;
+
+  // Don't hijack keys while typing or during a modifier shortcut.
   const el = e.target;
   const tag = (el.tagName || '').toLowerCase();
   if (tag === 'input' || tag === 'textarea' || tag === 'select' || el.isContentEditable) return;
   if (e.metaKey || e.ctrlKey || e.altKey) return;
-  if (e.key === 'ArrowRight') go(1);
-  if (e.key === 'ArrowLeft') go(-1);
+
+  // Space would activate a focused button/link — let the browser do that instead.
+  const onControl = tag === 'button' || tag === 'a';
+
+  switch (e.key) {
+    case ' ':
+      if (onControl) return;
+      e.preventDefault();
+      togglePlay();
+      break;
+    case 'n':
+    case 'N':
+      go(1);
+      break;
+    case 's':
+    case 'S':
+      shuffleQueue();
+      break;
+    case 'f':
+    case 'F':
+      toggleFullscreen();
+      break;
+    case '?':
+      e.preventDefault();
+      openHelp();
+      break;
+    case 'ArrowRight':
+      go(1);
+      break;
+    case 'ArrowLeft':
+      go(-1);
+      break;
+    default:
+      break;
+  }
 });
 
 /* ---- Service worker ---- */
@@ -421,4 +624,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-init();
+initPlaylistUI();
+
+/* When kids mode is on, the whole app funnels back to /kids/. */
+if (!enforceKidsMode('../kids/')) init();

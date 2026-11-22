@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Playlists · Beatavo</title>
+  <meta name="description" content="Build your own Beatavo playlists and play them back to back — family-safe cartoon dance videos.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#7c4dff">
+  <link rel="canonical" href="../playlists/">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Beatavo">
+  <link rel="preconnect" href="https://i.ytimg.com">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+
+  <!-- Open Graph / social sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Beatavo">
+  <meta property="og:title" content="Playlists · Beatavo">
+  <meta property="og:description" content="Build your own Beatavo playlists and play them back to back.">
+  <meta property="og:url" content="../playlists/">
+  <meta property="og:image" content="../assets/images/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Playlists · Beatavo">
+  <meta name="twitter:description" content="Build your own Beatavo playlists and play them back to back.">
+  <meta name="twitter:image" content="../assets/images/og.png">
+</head>
+<body class="playlists-page">
+  <a class="skip-link" href="#main" data-i18n="skip_to_content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="../">
+        <img class="brand__mark" src="../assets/icons/favicon.svg" alt="" width="32" height="32">
+        Beatavo
+      </a>
+      <nav class="header-nav" aria-label="Primary">
+        <a href="../" data-i18n="nav_videos">Videos</a>
+        <a href="../kids/" data-i18n="nav_kids">Kids</a>
+        <a href="../playlists/" data-i18n="nav_playlists">Playlists</a>
+        <a href="../privacy/" data-i18n="nav_privacy">Privacy</a>
+      </nav>
+      <label class="lang">
+        <span class="visually-hidden" data-i18n="language">Language</span>
+        <select class="lang__select" data-language-picker aria-label="Language"></select>
+      </label>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="container">
+      <div class="kids-back">
+        <a class="footer-link" href="../" data-i18n="back_home">Back to Beatavo</a>
+      </div>
+
+      <section class="hero" aria-labelledby="playlistsTitle">
+        <h1 id="playlistsTitle" data-i18n="playlists_title">Playlists</h1>
+        <p data-i18n="playlists_subtitle">Build your own dance line-ups and play them back to back.</p>
+        <form class="pl-create" id="plCreate">
+          <label class="visually-hidden" for="plCreateName" data-i18n="playlist_new_placeholder">New playlist name</label>
+          <input class="pl-create__input" id="plCreateName" type="text" maxlength="60"
+                 autocomplete="off" enterkeyhint="done"
+                 data-i18n-placeholder="playlist_new_placeholder" placeholder="New playlist name">
+          <button class="btn btn--play" type="submit" data-i18n="playlist_create">Create</button>
+        </form>
+      </section>
+
+      <div class="playlists" id="playlistsWrap" aria-busy="true"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <p class="site-footer__tagline" data-i18n="footer_tagline">Videos are hosted on YouTube.</p>
+      <nav class="footer-links" aria-label="Footer">
+        <a class="footer-link" href="../privacy/" data-i18n="footer_privacy">Privacy</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script type="module" src="../assets/js/playlists.js"></script>
+</body>
+</html>

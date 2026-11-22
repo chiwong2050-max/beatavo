@@ -39,8 +39,13 @@
       <nav class="header-nav" aria-label="Primary">
         <a href="../" data-i18n="nav_videos">Videos</a>
         <a href="../kids/" data-i18n="nav_kids">Kids</a>
+        <a href="../playlists/" data-i18n="nav_playlists">Playlists</a>
         <a href="../privacy/" data-i18n="nav_privacy">Privacy</a>
       </nav>
+      <button class="mode-toggle" id="kidsModeBtn" type="button" aria-pressed="false">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <span class="mode-toggle__text" id="kidsModeText" data-i18n="kids_mode_exit">Grown-ups: exit</span>
+      </button>
       <label class="lang">
         <span class="visually-hidden" data-i18n="language">Language</span>
         <select class="lang__select" data-language-picker aria-label="Language"></select>
@@ -53,6 +58,11 @@
       <div class="kids-back">
         <a class="footer-link" href="../" data-i18n="back_home">Back to Beatavo</a>
       </div>
+
+      <p class="kids-lock" id="kidsLock" hidden>
+        <span aria-hidden="true">🔒</span>
+        <span data-i18n="kids_mode_on">Kids mode is on</span>
+      </p>
 
       <section class="hero hero--kids" aria-labelledby="kidsTitle">
         <h1 id="kidsTitle" data-i18n="kids_page_title">Beatavo Kids</h1>

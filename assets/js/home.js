@@ -13,9 +13,12 @@ import {
   collectTags,
   formatTag,
   tagHref,
+  getRecentlyPlayed,
   FAVOURITES_EVENT,
 } from './data.js';
 import { initI18n, t } from './i18n.js';
+import { initPlaylistUI, playlistButtonMarkup } from './playlist-dialog.js';
+import { enforceKidsMode, setKidsMode } from './kids-mode.js';
 
 const grid = document.getElementById('videoGrid');
 const sectionHeadTitle = document.getElementById('sectionTitle');
@@ -30,6 +33,9 @@ const dotdThumb = document.getElementById('dotdThumb');
 const dotdTitle = document.getElementById('dotdVideoTitle');
 const tagNav = document.getElementById('tagNav');
 const tagList = document.getElementById('tagList');
+const recentRow = document.getElementById('recentRow');
+const recentList = document.getElementById('recentList');
+const kidsModeBtn = document.getElementById('kidsModeBtn');
 
 /* Views the grid can show: the two sections, plus the saved favourites.
    Values are i18n keys resolved at render time. */
@@ -86,6 +92,7 @@ function cardMarkup(video) {
               data-title="${escapeHtml(video.title)}" aria-label="${escapeHtml(label)}">
         ${HEART_ICON}
       </button>
+      ${playlistButtonMarkup(video)}
     </article>`;
 }
 
@@ -199,6 +206,7 @@ async function init() {
     grid.removeAttribute('aria-busy');
     renderDanceOfTheDay();
     renderTags();
+    renderRecentlyPlayed();
     setSection(location.hash.replace('#', '') || 'main');
   } catch (err) {
     showError(err.message || 'Unknown error.');
@@ -233,6 +241,30 @@ function renderTags() {
     )
     .join('');
   tagNav.hidden = false;
+}
+
+/** Horizontal row of the last videos opened on the watch page. */
+function renderRecentlyPlayed() {
+  if (!recentRow || !recentList) return;
+  const list = getRecentlyPlayed()
+    .map((id) => videos.find((v) => v.id === id))
+    .filter(Boolean);
+  if (list.length === 0) return;
+  recentList.innerHTML = list
+    .map(
+      (video) => `
+      <li class="recent__item">
+        <a class="recent__link" href="${watchHref(video.id)}">
+          <span class="recent__thumb">
+            <img src="${thumbnailUrl(video.id)}" alt="" width="320" height="180"
+                 loading="lazy" decoding="async">
+          </span>
+          <span class="recent__title">${escapeHtml(video.title)}</span>
+        </a>
+      </li>`
+    )
+    .join('');
+  recentRow.hidden = false;
 }
 
 /* ---- Events ---- */
@@ -295,4 +327,13 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-init();
+// Kids mode locks the app to /kids/; unlocking happens on the kids page.
+kidsModeBtn?.addEventListener('click', () => {
+  setKidsMode(true);
+  location.href = './kids/';
+});
+
+initPlaylistUI();
+
+/* When kids mode is on, the whole app funnels back to /kids/. */
+if (!enforceKidsMode('./kids/')) init();
