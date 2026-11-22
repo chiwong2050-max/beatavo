@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Offline · Beatavo</title>
+  <meta name="description" content="Beatavo is offline right now. Reconnect, or open a video you played before.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#7c4dff">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Beatavo">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body class="offline-page">
+  <a class="skip-link" href="#main" data-i18n="skip_to_content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="/">
+        <img class="brand__mark" src="/assets/icons/favicon.svg" alt="" width="32" height="32">
+        Beatavo
+      </a>
+      <nav class="header-nav" aria-label="Primary">
+        <a href="/" data-i18n="nav_videos">Videos</a>
+        <a href="/kids/" data-i18n="nav_kids">Kids</a>
+        <a href="/playlists/" data-i18n="nav_playlists">Playlists</a>
+        <a href="/privacy/" data-i18n="nav_privacy">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="container offline">
+      <p class="offline__icon" aria-hidden="true">📶</p>
+      <h1 data-i18n="offline_title">You're offline</h1>
+      <p class="offline__body" data-i18n="offline_body">Beatavo needs a connection to load new videos, but you can still open something you played before.</p>
+
+      <section class="offline__recent" aria-labelledby="offlineRecent">
+        <h2 class="offline__recent-label" id="offlineRecent" data-i18n="recently_played">Recently played</h2>
+        <ul class="offline__list" id="offlineList"></ul>
+        <p class="offline__empty" id="offlineEmpty" data-i18n="offline_none" hidden>Nothing saved yet — reconnect and start dancing.</p>
+      </section>
+
+      <div class="offline__actions">
+        <button class="btn btn--primary" id="offlineRetry" type="button" data-i18n="error_retry">Try again</button>
+        <a class="btn btn--ghost" href="/" data-i18n="back_home">Back to Beatavo</a>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="/assets/js/offline.js"></script>
+</body>
+</html>

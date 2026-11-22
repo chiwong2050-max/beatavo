@@ -99,8 +99,8 @@ async function networkFirst(request) {
   } catch (err) {
     const cached = await cache.match(request);
     if (cached) return cached;
-    // Offline fallback for navigations.
-    return (await cache.match('./index.html')) || Response.error();
+    // Offline fallback for navigations — a friendly page, not the home page.
+    return (await cache.match('./offline.html')) || Response.error();
   }
 }
 
