@@ -83,6 +83,32 @@ function updateMeta(video) {
 
   const canonical = document.head.querySelector('link[rel="canonical"]');
   if (canonical) canonical.setAttribute('href', canonicalUrl(video.id));
+
+  updateJsonLd(video, description);
+}
+
+/** Structured data (schema.org VideoObject) for rich search results. */
+function updateJsonLd(video, description) {
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: video.title,
+    description,
+    thumbnailUrl: [thumbnailUrl(video.id, 'hqdefault')],
+    embedUrl: `https://www.youtube-nocookie.com/embed/${encodeURIComponent(video.id)}`,
+    contentUrl: `https://www.youtube.com/watch?v=${encodeURIComponent(video.id)}`,
+    url: canonicalUrl(video.id),
+  };
+  if (video.published) data.uploadDate = video.published;
+
+  let el = document.getElementById('videoJsonLd');
+  if (!el) {
+    el = document.createElement('script');
+    el.type = 'application/ld+json';
+    el.id = 'videoJsonLd';
+    document.head.appendChild(el);
+  }
+  el.textContent = JSON.stringify(data);
 }
 
 function updateUrl(id) {
