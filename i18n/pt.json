@@ -101,5 +101,22 @@
   "shortcut_help": "Mostrar esta ajuda",
   "shortcut_shuffled": "Fila baralhada",
   "close": "Fechar",
-  "done": "Concluído"
+  "done": "Concluído",
+  "offline_title": "Sem ligação",
+  "offline_body": "O Beatavo precisa de ligação para carregar vídeos novos, mas ainda podes abrir algo que já viste.",
+  "offline_none": "Ainda não há nada guardado — volta a ligar-te e começa a dançar.",
+  "install_banner": "Adiciona o Beatavo ao teu ecrã principal",
+  "install_add": "Adicionar",
+  "install_dismiss": "Dispensar",
+  "sleep_timer": "Temporizador",
+  "sleep_off": "Desligado",
+  "sleep_15": "15 min",
+  "sleep_30": "30 min",
+  "sleep_60": "60 min",
+  "sleep_set": "Temporizador para {n} minutos",
+  "sleep_done": "Temporizador terminou — reprodução em pausa",
+  "loop_video": "Repetir este vídeo",
+  "not_found_title": "Página não encontrada",
+  "not_found_body": "Não encontrámos essa página. Pode ter sido movida — ou talvez só queiras dançar.",
+  "not_found_random": "Reproduzir algo aleatório"
 }

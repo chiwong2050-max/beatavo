@@ -101,5 +101,22 @@
   "shortcut_help": "Tampilkan bantuan ini",
   "shortcut_shuffled": "Antrean diacak",
   "close": "Tutup",
-  "done": "Selesai"
+  "done": "Selesai",
+  "offline_title": "Kamu sedang offline",
+  "offline_body": "Beatavo butuh koneksi untuk memuat video baru, tetapi kamu masih bisa membuka yang pernah ditonton.",
+  "offline_none": "Belum ada yang disimpan — sambungkan lagi dan mulai menari.",
+  "install_banner": "Tambahkan Beatavo ke layar utama",
+  "install_add": "Tambah",
+  "install_dismiss": "Abaikan",
+  "sleep_timer": "Timer tidur",
+  "sleep_off": "Mati",
+  "sleep_15": "15 menit",
+  "sleep_30": "30 menit",
+  "sleep_60": "60 menit",
+  "sleep_set": "Timer tidur diatur {n} menit",
+  "sleep_done": "Timer tidur berakhir — pemutaran dijeda",
+  "loop_video": "Ulangi video ini",
+  "not_found_title": "Halaman tidak ditemukan",
+  "not_found_body": "Kami tidak menemukan halaman itu. Mungkin sudah dipindahkan — atau kamu hanya ingin menari.",
+  "not_found_random": "Putar acak"
 }

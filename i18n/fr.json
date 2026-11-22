@@ -101,5 +101,22 @@
   "shortcut_help": "Afficher cette aide",
   "shortcut_shuffled": "File mélangée",
   "close": "Fermer",
-  "done": "Terminé"
+  "done": "Terminé",
+  "offline_title": "Hors ligne",
+  "offline_body": "Beatavo a besoin d'une connexion pour charger de nouvelles vidéos, mais tu peux encore ouvrir ce que tu as déjà regardé.",
+  "offline_none": "Rien d'enregistré pour l'instant — reconnecte-toi et danse.",
+  "install_banner": "Ajoute Beatavo à ton écran d'accueil",
+  "install_add": "Ajouter",
+  "install_dismiss": "Ignorer",
+  "sleep_timer": "Minuteur",
+  "sleep_off": "Désactivé",
+  "sleep_15": "15 min",
+  "sleep_30": "30 min",
+  "sleep_60": "60 min",
+  "sleep_set": "Minuteur réglé sur {n} minutes",
+  "sleep_done": "Minuteur terminé — lecture en pause",
+  "loop_video": "Lire cette vidéo en boucle",
+  "not_found_title": "Page introuvable",
+  "not_found_body": "Nous n'avons pas trouvé cette page. Elle a peut-être été déplacée — ou tu veux juste danser.",
+  "not_found_random": "Lire une vidéo au hasard"
 }

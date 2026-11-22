@@ -101,5 +101,22 @@
   "shortcut_help": "Mostrar esta ayuda",
   "shortcut_shuffled": "Cola mezclada",
   "close": "Cerrar",
-  "done": "Hecho"
+  "done": "Hecho",
+  "offline_title": "Sin conexión",
+  "offline_body": "Beatavo necesita conexión para cargar vídeos nuevos, pero aún puedes abrir algo que ya habías visto.",
+  "offline_none": "Aún no hay nada guardado — vuelve a conectarte y ponte a bailar.",
+  "install_banner": "Añade Beatavo a tu pantalla de inicio",
+  "install_add": "Añadir",
+  "install_dismiss": "Descartar",
+  "sleep_timer": "Temporizador",
+  "sleep_off": "Desactivado",
+  "sleep_15": "15 min",
+  "sleep_30": "30 min",
+  "sleep_60": "60 min",
+  "sleep_set": "Temporizador en {n} minutos",
+  "sleep_done": "Temporizador terminado — reproducción en pausa",
+  "loop_video": "Repetir este vídeo",
+  "not_found_title": "Página no encontrada",
+  "not_found_body": "No encontramos esa página. Puede que se haya movido — o quizá solo quieras bailar.",
+  "not_found_random": "Reproducir algo aleatorio"
 }

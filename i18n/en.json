@@ -101,5 +101,22 @@
   "shortcut_help": "Show this help",
   "shortcut_shuffled": "Queue shuffled",
   "close": "Close",
-  "done": "Done"
+  "done": "Done",
+  "offline_title": "You're offline",
+  "offline_body": "Beatavo needs a connection to load new videos, but you can still open something you played before.",
+  "offline_none": "Nothing saved yet — reconnect and start dancing.",
+  "install_banner": "Add Beatavo to your home screen",
+  "install_add": "Add",
+  "install_dismiss": "Dismiss",
+  "sleep_timer": "Sleep timer",
+  "sleep_off": "Off",
+  "sleep_15": "15 min",
+  "sleep_30": "30 min",
+  "sleep_60": "60 min",
+  "sleep_set": "Sleep timer set for {n} minutes",
+  "sleep_done": "Sleep timer ended — playback paused",
+  "loop_video": "Loop this video",
+  "not_found_title": "Page not found",
+  "not_found_body": "We couldn't find that page. It may have moved — or maybe you just want to dance.",
+  "not_found_random": "Play something random"
 }

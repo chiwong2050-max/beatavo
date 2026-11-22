@@ -101,5 +101,22 @@
   "shortcut_help": "显示此帮助",
   "shortcut_shuffled": "播放队列已打乱",
   "close": "关闭",
-  "done": "完成"
+  "done": "完成",
+  "offline_title": "你已离线",
+  "offline_body": "Beatavo 需要联网才能加载新视频，但你仍可打开之前看过的内容。",
+  "offline_none": "还没有保存任何内容——联网后开始跳舞吧。",
+  "install_banner": "将 Beatavo 添加到主屏幕",
+  "install_add": "添加",
+  "install_dismiss": "忽略",
+  "sleep_timer": "睡眠定时",
+  "sleep_off": "关闭",
+  "sleep_15": "15 分钟",
+  "sleep_30": "30 分钟",
+  "sleep_60": "60 分钟",
+  "sleep_set": "睡眠定时已设为 {n} 分钟",
+  "sleep_done": "睡眠定时结束——已暂停播放",
+  "loop_video": "循环播放此视频",
+  "not_found_title": "页面未找到",
+  "not_found_body": "我们找不到该页面。它可能已被移动——或者你只是想跳舞。",
+  "not_found_random": "随机播放一个"
 }
